@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -18,17 +19,19 @@ func main() {
 		log.Fatal("SYNAPS_APP_ID is not set")
 	}
 
-	sdk := synaps.InitSDK(apiKey)
+	sdk := synaps.InitCorporate(apiKey)
 
-	sessionID, err := sdk.Individual.Init(appID)
+	sessionID, err := sdk.Init()
 	if err != nil {
 		log.Fatalf("failed to init session for app[%s]: %s", appID, err.Error())
 	}
 
-	_, err = sdk.Individual.Details(sessionID)
+	details, err := sdk.Details(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
 	}
 
-	// fmt.Println("session status: %s", details.Status)
+	fmt.Println("session status: %s", details.Status)
+
+	overview, err := sdk.Details(sessionID)
 }

@@ -1,22 +1,26 @@
 package synaps
 
-type Instance struct {
-	Individual SessionService
-	Corporate  CorporateService
+type Individual interface {
+	InitIndividual() (sessionID string, err error)
+	Details(sessionID string) (SessionDetails, error)
+	Overview(sessionID string) (SessionOverview, error)
 }
 
-func InitSDK(apiKey string) *Instance {
-	return &Instance{
-		Individual: initIndividual(apiKey),
-		Corporate:  initCorporate(apiKey),
-	}
+type SessionDetails struct {
+	Status string
 }
+
+type SessionOverview struct{}
 
 type individual struct {
 	apiKey string
 }
 
-func (individual *individual) Init(appID string) (session string, err error) {
+func NewIndividualSDK(apiKey string) Individual {
+	return &individual{apiKey: apiKey}
+}
+
+func (individual *individual) InitIndividual() (session string, err error) {
 	panic("not implemented") // TODO: Implement
 }
 
@@ -30,16 +34,6 @@ func (individual *individual) Overview(sessionID string) (SessionOverview, error
 
 func initIndividual(apiKey string) *individual {
 	return &individual{
-		apiKey: apiKey,
-	}
-}
-
-type corporate struct {
-	apiKey string
-}
-
-func initCorporate(apiKey string) *corporate {
-	return &corporate{
 		apiKey: apiKey,
 	}
 }
