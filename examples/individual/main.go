@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/synaps.io/synaps-sdk-go"
+	"github.com/synaps.io/synaps-sdk-go/individual"
 )
 
 func main() {
@@ -19,9 +19,9 @@ func main() {
 		log.Fatal("SYNAPS_APP_ID is not set")
 	}
 
-	sdk := synaps.NewIndividualSDK(apiKey)
+	sdk := individual.NewClient(apiKey)
 
-	sessionID, err := sdk.InitIndividual()
+	sessionID, err := sdk.Init()
 	if err != nil {
 		log.Fatalf("failed to init session for app[%s]: %s", appID, err.Error())
 	}
