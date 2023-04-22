@@ -5,10 +5,16 @@ import (
 	"log"
 	"os"
 
-	"github.com/synaps.io/synaps-sdk-go/individual"
+	"github.com/joho/godotenv"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	apiKey := os.Getenv("SYNAPS_API_KEY")
 	if apiKey == "" {
 		log.Fatal("SYNAPS_API_KEY is not set")
@@ -33,7 +39,7 @@ func main() {
 
 	fmt.Printf("session status: %s\n", details.Status)
 
-	overview, err := sdk.Details(sessionID)
+	overview, err := sdk.Overview(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get overview for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
 	}
