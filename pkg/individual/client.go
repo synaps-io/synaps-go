@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
-	. "github.com/synaps.io/synaps-sdk-go/pkg/models"
+	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 type Client struct {
@@ -16,16 +17,24 @@ type Client struct {
 }
 
 type IndividualService interface {
-	Init() (sessionID string, err error)
-	Details(sessionID string) (SessionDetailsResponse, error)
-	Overview(sessionID string) (SessionOverviewResponse, error)
+	InitSession() (sessionID string, err error)
+	SessionDetails(sessionID string) (SessionDetailsResponse, error)
+	StepDetails(sessionID string, stepID string) (StepDetailsResponse, error)
 }
 
-func NewClient(apiKey string) *Client {
+func NewClient(baseURL string, apiKey string) *Client {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
-		baseURL:    "https://api.dev.synaps.run/v4/",
+		baseURL:    baseURL,
+	}
+}
+
+func NewClientFromEnv() *Client {
+	return &Client{
+		httpClient: http.DefaultClient,
+		apiKey:     os.Getenv("SYNAPS_API_KEY"),
+		baseURL:    os.Getenv("SYNAPS_BASE_URL"),
 	}
 }
 
@@ -51,28 +60,4 @@ func makeRequest[T any](httpClient *http.Client, method string, path string, bod
 	defer res.Body.Close()
 
 	return &output, nil
-}
-
-func (c *Client) Init() (sessionID string, err error) {
-	res, err := makeRequest[InitSessionResponse](c.httpClient, "POST", c.baseURL+"session/init", nil, map[string]string{"Api-Key": c.apiKey})
-	if err != nil {
-		return "", fmt.Errorf("failed to make init session request: %w", err)
-	}
-	return res.SessionID, nil
-}
-
-func (c *Client) Details(sessionID string) (details SessionDetailsResponse, err error) {
-	res, err := makeRequest[SessionDetailsResponse](c.httpClient, "GET", c.baseURL+"onboarding/details", nil, map[string]string{"Api-Key": c.apiKey, "session-id": sessionID})
-	if err != nil {
-		return SessionDetailsResponse{}, fmt.Errorf("failed to make session details request: %w", err)
-	}
-	return *res, nil
-}
-
-func (c *Client) Overview(sessionID string) (details SessionOverviewResponse, err error) {
-	res, err := makeRequest[SessionOverviewResponse](c.httpClient, "GET", c.baseURL+"onboarding/overview", nil, map[string]string{"Api-Key": c.apiKey, "session-id": sessionID})
-	if err != nil {
-		return SessionOverviewResponse{}, fmt.Errorf("failed to make session details request: %w", err)
-	}
-	return *res, nil
 }

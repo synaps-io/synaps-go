@@ -3,46 +3,60 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 func main() {
-	err := godotenv.Load()
+	sdk := individual.NewClientFromEnv()
+
+	sessionID, err := sdk.InitSession()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("failed to init session: %s", err)
 	}
 
-	apiKey := os.Getenv("SYNAPS_API_KEY")
-	if apiKey == "" {
-		log.Fatal("SYNAPS_API_KEY is not set")
-	}
+	// Getting session sessionDetails
 
-	appID := os.Getenv("SYNAPS_APP_ID")
-	if appID == "" {
-		log.Fatal("SYNAPS_APP_ID is not set")
-	}
-
-	sdk := individual.NewClient(apiKey)
-
-	sessionID, err := sdk.Init()
+	sessionDetails, err := sdk.SessionDetails(sessionID)
 	if err != nil {
-		log.Fatalf("failed to init session for app[%s]: %s", appID, err.Error())
+		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
 
-	details, err := sdk.Details(sessionID)
+	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
+
+	// Method iterating over session steps to find the one with this type
+
+	step, err := sessionDetails.GetSessionStep(individual.Liveness)
 	if err != nil {
-		log.Fatalf("failed to get details for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
+		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 	}
 
-	fmt.Printf("session status: %s\n", details.Status)
+	// Getting step details
 
-	overview, err := sdk.Overview(sessionID)
+	stepDetails, err := sdk.StepDetails(sessionID, step.ID)
 	if err != nil {
-		log.Fatalf("failed to get overview for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
+		log.Fatalf("failed to get step details step [%s] and session[%s]: %s", step.Type, sessionID, err)
+	}
+	fmt.Printf("step details: %+v\n", stepDetails)
+
+	// To get step relative data you can either do this
+
+	switch stepDetails.Type {
+	case "LIVENESS":
+		stepData := individual.GetStepSpecificData[StepLiveness](stepDetails)
+		fmt.Printf("Liveness file url: %s\n", stepData.Data.Liveness.File.URL)
+	case "ID_DOCUMENT":
+		stepData2 := individual.GetStepSpecificData[StepIdentity](stepDetails)
+		fmt.Printf("Document firstname: %s\n", stepData2.Data.Fields.Firstname)
 	}
 
-	fmt.Printf("overview: %+v\n", overview)
+	// Or simply use go classic json handling
+
+	switch stepDetails.Type {
+	case "LIVENESS":
+		fmt.Printf("Liveness file url: %+v", stepDetails.Verification["liveness"].(map[string]any)["file"].(map[string]any)["url"].(string))
+	case "ID_DOCUMENT":
+		fmt.Printf("Document firstname: %s\n", stepDetails.Document["fields"].(map[string]any)["firstname"].(string))
+	}
 }
