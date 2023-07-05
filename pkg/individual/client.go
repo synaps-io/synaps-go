@@ -19,8 +19,8 @@ type Client struct {
 
 type IndividualService interface {
 	InitSession() (sessionID string, err error)
-	SessionDetails(sessionID string) (SessionDetailsResponse, error)
-	StepDetails(sessionID string, stepID string) (any, error)
+	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
+	GetStepDetails(sessionID string, stepID string) (any, error)
 }
 
 func NewClient(baseURL string, apiKey string) *Client {

@@ -25,7 +25,7 @@ type Step struct {
 	Type   string `json:"type"`
 }
 
-func (details *SessionDetailsResponse) GetSessionStep(stepType string) (*Step, error) {
+func (details *SessionDetailsResponse) FindSessionStep(stepType string) (*Step, error) {
 	for _, step := range details.Session.Steps {
 		if step.Type == stepType {
 			return &step, nil

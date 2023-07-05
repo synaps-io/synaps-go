@@ -18,7 +18,7 @@ func main() {
 
 	// Getting session details
 
-	sessionDetails, err := synapsClient.SessionDetails(sessionID)
+	sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
@@ -28,12 +28,12 @@ func main() {
 	// Getting liveness step details with GetSessionStep helper method
 
 	func() {
-		livenessStep, err := sessionDetails.GetSessionStep(individual.Liveness)
+		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
 
-		stepDetails, err := synapsClient.StepDetails(sessionID, livenessStep.ID)
+		stepDetails, err := synapsClient.GetStepDetails(sessionID, livenessStep.ID)
 		if err != nil {
 			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 		}
@@ -58,7 +58,7 @@ func main() {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
 
-		stepDetails, err := synapsClient.StepDetails(sessionID, IDDocumentStep.ID)
+		stepDetails, err := synapsClient.GetStepDetails(sessionID, IDDocumentStep.ID)
 		if err != nil {
 			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
 		}
@@ -72,7 +72,7 @@ func main() {
 
 	func() {
 		for _, step := range sessionDetails.Session.Steps {
-			stepDetails, err := synapsClient.StepDetails(sessionID, step.ID)
+			stepDetails, err := synapsClient.GetStepDetails(sessionID, step.ID)
 			if err != nil {
 				return
 			}
