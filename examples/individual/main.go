@@ -9,54 +9,86 @@ import (
 )
 
 func main() {
-	sdk := individual.NewClientFromEnv()
+	synapsClient := individual.NewClientFromEnv()
 
-	sessionID, err := sdk.InitSession()
+	sessionID, err := synapsClient.InitSession()
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
 
-	// Getting session sessionDetails
+	// Getting session details
 
-	sessionDetails, err := sdk.SessionDetails(sessionID)
+	sessionDetails, err := synapsClient.SessionDetails(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
 
 	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
-	// Method iterating over session steps to find the one with this type
+	// Getting liveness step details with GetSessionStep helper method
 
-	step, err := sessionDetails.GetSessionStep(individual.Liveness)
-	if err != nil {
-		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-	}
+	func() {
+		livenessStep, err := sessionDetails.GetSessionStep(individual.Liveness)
+		if err != nil {
+			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+		}
 
-	// Getting step details
+		stepDetails, err := synapsClient.StepDetails(sessionID, livenessStep.ID)
+		if err != nil {
+			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
+		}
 
-	stepDetails, err := sdk.StepDetails(sessionID, step.ID)
-	if err != nil {
-		log.Fatalf("failed to get step details step [%s] and session[%s]: %s", step.Type, sessionID, err)
-	}
-	fmt.Printf("step details: %+v\n", stepDetails)
+		livenessStepDetails := stepDetails.(LivenessStepDetails)
 
-	// To get step relative data you can either do this
+		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+	}()
 
-	switch stepDetails.Type {
-	case "LIVENESS":
-		stepData := individual.GetStepSpecificData[StepLiveness](stepDetails)
-		fmt.Printf("Liveness file url: %s\n", stepData.Data.Liveness.File.URL)
-	case "ID_DOCUMENT":
-		stepData2 := individual.GetStepSpecificData[StepIdentity](stepDetails)
-		fmt.Printf("Document firstname: %s\n", stepData2.Data.Fields.Firstname)
-	}
+	// Getting id document step details without using helper method
 
-	// Or simply use go classic json handling
+	func() {
+		var IDDocumentStep *Step
+		for _, step := range sessionDetails.Session.Steps {
+			if step.Type == individual.IDDocument {
+				IDDocumentStep = &step
+				break
+			}
+		}
 
-	switch stepDetails.Type {
-	case "LIVENESS":
-		fmt.Printf("Liveness file url: %+v", stepDetails.Verification["liveness"].(map[string]any)["file"].(map[string]any)["url"].(string))
-	case "ID_DOCUMENT":
-		fmt.Printf("Document firstname: %s\n", stepDetails.Document["fields"].(map[string]any)["firstname"].(string))
-	}
+		if IDDocumentStep != nil {
+			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+		}
+
+		stepDetails, err := synapsClient.StepDetails(sessionID, IDDocumentStep.ID)
+		if err != nil {
+			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
+		}
+
+		idDocumentStepDetails := stepDetails.(IDDocumentStepDetails)
+
+		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
+	}()
+
+	// Iterating over steps
+
+	func() {
+		for _, step := range sessionDetails.Session.Steps {
+			stepDetails, err := synapsClient.StepDetails(sessionID, step.ID)
+			if err != nil {
+				return
+			}
+
+			switch step.Type {
+			case individual.Liveness:
+				_ = stepDetails.(LivenessStepDetails)
+			case individual.IDDocument:
+				_ = stepDetails.(IDDocumentStepDetails)
+			case individual.Email:
+				_ = stepDetails.(EmailStepDetails)
+			case individual.Phone:
+				_ = stepDetails.(PhoneStepDetails)
+			case individual.ProofOfAddress:
+				_ = stepDetails.(ProofOfAddressStepDetails)
+			}
+		}
+	}()
 }

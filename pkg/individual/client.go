@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -19,7 +20,7 @@ type Client struct {
 type IndividualService interface {
 	InitSession() (sessionID string, err error)
 	SessionDetails(sessionID string) (SessionDetailsResponse, error)
-	StepDetails(sessionID string, stepID string) (StepDetailsResponse, error)
+	StepDetails(sessionID string, stepID string) (any, error)
 }
 
 func NewClient(baseURL string, apiKey string) *Client {
@@ -31,11 +32,17 @@ func NewClient(baseURL string, apiKey string) *Client {
 }
 
 func NewClientFromEnv() *Client {
-	return &Client{
-		httpClient: http.DefaultClient,
-		apiKey:     os.Getenv("SYNAPS_API_KEY"),
-		baseURL:    os.Getenv("SYNAPS_BASE_URL"),
+	apiKey, ok := os.LookupEnv("SYNAPS_API_KEY")
+	if !ok {
+		log.Fatalf("Missing required SYNAPS_API_KEY env variable")
 	}
+
+	baseURL, ok := os.LookupEnv("SYNAPS_BASE_URL")
+	if !ok {
+		log.Fatalf("Missing required SYNAPS_BASE_URL env variable")
+	}
+
+	return NewClient(apiKey, baseURL)
 }
 
 func makeRequest[T any](httpClient *http.Client, method string, path string, body io.Reader, headers map[string]string) (*T, error) {
