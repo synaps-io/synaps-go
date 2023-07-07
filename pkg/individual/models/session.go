@@ -4,6 +4,12 @@ import "errors"
 
 type InitSessionResponse struct {
 	SessionID string `json:"session_id"`
+	Sandbox   bool   `json:"sandbox"`
+}
+
+type InitSessionRequest struct {
+	Metadata map[string]any `json:"metadata,omitempty"`
+	Alias    string         `json:"alias,omitempty"`
 }
 
 type SessionDetailsResponse struct {
@@ -13,6 +19,7 @@ type SessionDetailsResponse struct {
 	} `json:"app"`
 	Session struct {
 		ID      string `json:"id"`
+		Alias   string `json:"alias"`
 		Status  string `json:"status"`
 		Sandbox bool   `json:"sandbox"`
 		Steps   []Step `json:"steps"`

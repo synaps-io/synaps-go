@@ -11,7 +11,11 @@ import (
 func main() {
 	synapsClient := individual.NewClientFromEnv()
 
-	sessionID, err := synapsClient.InitSession()
+	req := InitSessionRequest{Alias: "12345"}
+
+	initSessionRes, err := synapsClient.InitSession(req)
+	sessionID := initSessionRes.SessionID
+
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
@@ -25,7 +29,7 @@ func main() {
 
 	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
-	// Getting liveness step details with GetSessionStep helper method
+	// Getting liveness step details with FindSessionStep helper method
 
 	func() {
 		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
@@ -33,17 +37,15 @@ func main() {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
 
-		stepDetails, err := synapsClient.GetStepDetails(sessionID, livenessStep.ID)
+		livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
 		if err != nil {
 			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 		}
 
-		livenessStepDetails := stepDetails.(LivenessStepDetails)
-
 		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
 	}()
 
-	// Getting id document step details without using helper method
+	// Getting id document step details without helper method
 
 	func() {
 		var IDDocumentStep *Step
@@ -54,16 +56,14 @@ func main() {
 			}
 		}
 
-		if IDDocumentStep != nil {
+		if IDDocumentStep == nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
 
-		stepDetails, err := synapsClient.GetStepDetails(sessionID, IDDocumentStep.ID)
+		idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
 		if err != nil {
 			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
 		}
-
-		idDocumentStepDetails := stepDetails.(IDDocumentStepDetails)
 
 		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
 	}()
@@ -72,22 +72,17 @@ func main() {
 
 	func() {
 		for _, step := range sessionDetails.Session.Steps {
-			stepDetails, err := synapsClient.GetStepDetails(sessionID, step.ID)
-			if err != nil {
-				return
-			}
-
 			switch step.Type {
 			case individual.Liveness:
-				_ = stepDetails.(LivenessStepDetails)
+				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
 			case individual.IDDocument:
-				_ = stepDetails.(IDDocumentStepDetails)
+				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
 			case individual.Email:
-				_ = stepDetails.(EmailStepDetails)
+				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
 			case individual.Phone:
-				_ = stepDetails.(PhoneStepDetails)
+				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
 			case individual.ProofOfAddress:
-				_ = stepDetails.(ProofOfAddressStepDetails)
+				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}
 	}()

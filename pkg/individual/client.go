@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
@@ -18,7 +19,7 @@ type Client struct {
 }
 
 type IndividualService interface {
-	InitSession() (sessionID string, err error)
+	InitSession() (InitSessionResponse, error)
 	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
 	GetStepDetails(sessionID string, stepID string) (any, error)
 }
@@ -32,6 +33,8 @@ func NewClient(baseURL string, apiKey string) *Client {
 }
 
 func NewClientFromEnv() *Client {
+	godotenv.Load()
+
 	apiKey, ok := os.LookupEnv("SYNAPS_API_KEY")
 	if !ok {
 		log.Fatalf("Missing required SYNAPS_API_KEY env variable")
@@ -42,7 +45,7 @@ func NewClientFromEnv() *Client {
 		log.Fatalf("Missing required SYNAPS_BASE_URL env variable")
 	}
 
-	return NewClient(apiKey, baseURL)
+	return NewClient(baseURL, apiKey)
 }
 
 func makeRequest[T any](httpClient *http.Client, method string, path string, body io.Reader, headers map[string]string) (*T, error) {

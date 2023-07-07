@@ -1,15 +1,24 @@
 package individual
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 
 	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
-func (c *Client) InitSession() (sessionID string, err error) {
-	res, err := makeRequest[InitSessionResponse](c.httpClient, "POST", c.baseURL+"session/init", nil, map[string]string{"Api-Key": c.apiKey})
+func (c *Client) InitSession(req InitSessionRequest) (sessionID InitSessionResponse, err error) {
+	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
+	body, err := json.Marshal(req)
+	fmt.Printf("%+v", string(body))
 	if err != nil {
-		return "", fmt.Errorf("failed to make init session request: %w", err)
+		return InitSessionResponse{}, err
 	}
-	return res.SessionID, nil
+
+	res, err := makeRequest[InitSessionResponse](c.httpClient, "POST", c.baseURL+"session/init", bytes.NewReader(body), headers)
+	if err != nil {
+		return InitSessionResponse{}, fmt.Errorf("failed to make init session request: %w", err)
+	}
+	return *res, nil
 }
