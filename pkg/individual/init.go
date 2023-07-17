@@ -11,7 +11,6 @@ import (
 func (c *Client) InitSession(req InitSessionRequest) (sessionID InitSessionResponse, err error) {
 	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
 	body, err := json.Marshal(req)
-	fmt.Printf("%+v", string(body))
 	if err != nil {
 		return InitSessionResponse{}, err
 	}

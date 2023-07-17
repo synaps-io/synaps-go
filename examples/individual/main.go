@@ -31,7 +31,7 @@ func main() {
 
 	// Getting liveness step details with FindSessionStep helper method
 
-	func() {
+	{
 		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
@@ -43,11 +43,11 @@ func main() {
 		}
 
 		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-	}()
+	}
 
 	// Getting id document step details without helper method
 
-	func() {
+	{
 		var IDDocumentStep *Step
 		for _, step := range sessionDetails.Session.Steps {
 			if step.Type == individual.IDDocument {
@@ -66,11 +66,11 @@ func main() {
 		}
 
 		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
-	}()
+	}
 
 	// Iterating over steps
 
-	func() {
+	{
 		for _, step := range sessionDetails.Session.Steps {
 			switch step.Type {
 			case individual.Liveness:
@@ -85,5 +85,5 @@ func main() {
 				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}
-	}()
+	}
 }
