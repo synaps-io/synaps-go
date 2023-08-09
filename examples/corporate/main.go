@@ -3,46 +3,87 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/synaps.io/synaps-sdk-go/pkg/corporate"
+	. "github.com/synaps.io/synaps-sdk-go/pkg/corporate/models"
 )
 
 func main() {
-	err := godotenv.Load()
+	synapsClient := corporate.NewClientFromEnv()
+
+	req := InitSessionRequest{Alias: "12345"}
+
+	initSessionRes, err := synapsClient.InitSession(req)
+	sessionID := initSessionRes.SessionID
+
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("failed to init session: %s", err)
 	}
 
-	apiKey := os.Getenv("SYNAPS_API_KEY")
-	if apiKey == "" {
-		log.Fatal("SYNAPS_API_KEY is not set")
-	}
+	// Getting session details
 
-	appID := os.Getenv("SYNAPS_APP_ID")
-	if appID == "" {
-		log.Fatal("SYNAPS_APP_ID is not set")
-	}
-
-	sdk := corporate.NewClient(apiKey)
-
-	sessionID, err := sdk.Init()
+	sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
 	if err != nil {
-		log.Fatalf("failed to init session for app[%s]: %s", appID, err.Error())
+		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
 
-	details, err := sdk.Details(sessionID)
-	if err != nil {
-		log.Fatalf("failed to get details for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
-	}
+	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
-	fmt.Printf("session status: %s\n", details.Status)
+	// Getting liveness step details with FindSessionStep helper method
 
-	overview, err := sdk.Overview(sessionID)
-	if err != nil {
-		log.Fatalf("failed to get overview for session[%s] and app[%s]: %s", sessionID, appID, err.Error())
-	}
+	func() {
+		livenessStep, err := sessionDetails.FindSessionStep(corporate.Liveness)
+		if err != nil {
+			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+		}
 
-	fmt.Printf("overview: %+v\n", overview)
+		livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
+		if err != nil {
+			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
+		}
+
+		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+	}()
+
+	// Getting id document step details without helper method
+
+	func() {
+		var IDDocumentStep *Step
+		for _, step := range sessionDetails.Session.Steps {
+			if step.Type == corporate.IDDocument {
+				IDDocumentStep = &step
+				break
+			}
+		}
+
+		if IDDocumentStep == nil {
+			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+		}
+
+		idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
+		if err != nil {
+			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
+		}
+
+		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
+	}()
+
+	// Iterating over steps
+
+	func() {
+		for _, step := range sessionDetails.Session.Steps {
+			switch step.Type {
+			case corporate.Liveness:
+				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
+			case corporate.IDDocument:
+				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
+			case corporate.Email:
+				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
+			case corporate.Phone:
+				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
+			case corporate.ProofOfAddress:
+				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
+			}
+		}
+	}()
 }
