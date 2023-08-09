@@ -39,10 +39,14 @@ func main() {
 
 		livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
 		if err != nil {
-			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
+			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 		}
 
-		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+		fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
+
+		if livenessStep.Status == string(individual.Approved) {
+			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+		}
 	}
 
 	// Getting id document step details without helper method
@@ -62,10 +66,15 @@ func main() {
 
 		idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
 		if err != nil {
-			log.Fatalf("failed to get step details step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
+			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
 		}
 
-		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
+		fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
+
+		if idDocumentStepDetails.Status == string(individual.Pending) || idDocumentStepDetails.Status == string(individual.Approved) {
+			fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
+		}
+
 	}
 
 	// Iterating over steps
