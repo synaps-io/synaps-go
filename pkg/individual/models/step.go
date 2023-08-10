@@ -7,7 +7,7 @@ type File struct {
 }
 
 type (
-	idDocumentData struct {
+	IdDocumentData struct {
 		Country string `json:"country"`
 		Type    string `json:"type"`
 		Fields  struct {
@@ -28,7 +28,7 @@ type (
 			Back  File `json:"back"`
 		} `json:"original_files"`
 	}
-	proofOfAddressData struct {
+	ProofOfAddressData struct {
 		Country string `json:"country"`
 		Type    string `json:"type"`
 		Fields  struct {
@@ -47,7 +47,7 @@ type (
 			Proof        File `json:"proof"`
 		} `json:"original_files"`
 	}
-	phoneData struct {
+	PhoneData struct {
 		Phone struct {
 			CallingCode string `json:"calling_code"`
 			Country     string `json:"country"`
@@ -55,12 +55,12 @@ type (
 			Number      string `json:"number"`
 		} `json:"phone"`
 	}
-	emailData struct {
+	EmailData struct {
 		Email struct {
 			Value string `json:"value"`
 		} `json:"email"`
 	}
-	livenessData struct {
+	LivenessData struct {
 		Liveness struct {
 			File File `json:"file"`
 		} `json:"liveness"`
@@ -85,7 +85,7 @@ type PhoneStepDetails struct {
 	Reason   string   `json:"reason"`
 
 	Timeline     []any
-	Verification phoneData `json:"verification"`
+	Verification PhoneData `json:"verification"`
 }
 
 type EmailStepDetails struct {
@@ -96,7 +96,7 @@ type EmailStepDetails struct {
 	Reason   string   `json:"reason"`
 
 	Timeline     []any
-	Verification emailData `json:"verification"`
+	Verification EmailData `json:"verification"`
 }
 
 type ProofOfAddressStepDetails struct {
@@ -107,7 +107,7 @@ type ProofOfAddressStepDetails struct {
 	Reason   string   `json:"reason"`
 
 	Timeline []any
-	Document proofOfAddressData `json:"document"`
+	Document ProofOfAddressData `json:"document"`
 }
 
 type IDDocumentStepDetails struct {
@@ -118,7 +118,7 @@ type IDDocumentStepDetails struct {
 	Reason   string   `json:"reason"`
 
 	Timeline []any
-	Document idDocumentData `json:"document"`
+	Document IdDocumentData `json:"document"`
 }
 
 type LivenessStepDetails struct {
@@ -129,5 +129,5 @@ type LivenessStepDetails struct {
 	Reason   string   `json:"reason"`
 
 	Timeline     []any
-	Verification livenessData `json:"verification"`
+	Verification LivenessData `json:"verification"`
 }
