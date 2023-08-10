@@ -1,9 +1,15 @@
 # Synaps Go SDK
 
+# Corporate (Coming soon)
+...
+
+# Individual 
+
 The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions.  
 Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, ...).  
 
 > For more details the Synaps API documentation can be found at [https://docs.synaps.io](https://docs.synaps.io).
+
 
 ## Installation
 
@@ -149,3 +155,4 @@ For more details on the API, please refer to the [Synaps API Reference](https://
 ## License
 
 This SDK is released under the [MIT License](LICENSE). Feel free to review the terms of the license in the provided [LICENSE](LICENSE) file.
+
