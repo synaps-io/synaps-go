@@ -19,13 +19,16 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 
 - **Go Programming Language**: requires Go 1.19 or higher.
 
-- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the manager app in the developer section of your app [https://manager-kyc.synaps.io](https://manager-kyc.synaps.io)
+- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the [manager app](https://manager-kyc.synaps.io) in the developer section of your app
 
 - **Synaps base url**: The synaps endpoint
 
 ## Usage
 
-The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks. This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.
+The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.
+This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.
+
+> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
 
 ### Imports 
 
@@ -79,73 +82,65 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
 Get liveness step details using the `FindSessionStep` helper method:
 ```go
-{
-	livenessStep, err := sessionDetails.FindSessionStep(models.LivenessStep)
-	if err != nil {
-		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-	}
-	livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
-	if err != nil {
-		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-	}
-	fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
+livenessStep, err := sessionDetails.FindSessionStep(models.LivenessStep)
+if err != nil {
+	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+}
+livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
+if err != nil {
+	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
+}
+fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
 
-	if livenessStep.Status == models.Approved {
-		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-	}
+if livenessStep.Status == models.Approved {
+	fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+}
 
-	if livenessStep.Status == models.Rejected {
-		fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
-	}
+if livenessStep.Status == models.Rejected {
+	fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
 }
 ```
 
 Get ID document step details without helper method:
 ```go
-{
-	var IDDocumentStep *models.Step
-	for _, step := range sessionDetails.Session.Steps {
-		if step.Type == models.IDDocument {
-			IDDocumentStep = &step
-			break
-		}
+var IDDocumentStep *models.Step
+for _, step := range sessionDetails.Session.Steps {
+	if step.Type == models.IDDocument {
+		IDDocumentStep = &step
+		break
 	}
-	if IDDocumentStep == nil {
-		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-	}
-	idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
-	if err != nil {
-		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
-	}
-	fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
+}
+if IDDocumentStep == nil {
+	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+}
+idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
+if err != nil {
+	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
+}
+fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
 
-	if idDocumentStepDetails.Status == models.Pending || idDocumentStepDetails.Status == models.Approved {
-		fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
-	}
+if idDocumentStepDetails.Status == models.Pending || idDocumentStepDetails.Status == models.Approved {
+	fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
 }
 ```
 
 Iterating over steps:
 ```go
-{
-	for _, step := range sessionDetails.Session.Steps {
-		switch step.Type {
-		case models.Liveness:
-			_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-		case models.IDDocument:
-			_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-		case models.Email:
-			_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-		case models.Phone:
-			_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-		case models.ProofOfAddress:
-			_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
-		}
+for _, step := range sessionDetails.Session.Steps {
+	switch step.Type {
+	case models.Liveness:
+		_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
+	case models.IDDocument:
+		_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
+	case models.Email:
+		_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
+	case models.Phone:
+		_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
+	case models.ProofOfAddress:
+		_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 	}
 }
 ```
-
-> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
 
 ## API Reference
 
