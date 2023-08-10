@@ -33,7 +33,7 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.  
 This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.  
 
-> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/exemples/individual/main.go) file within the repository.
+> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/main.go) file within the repository.
 
 ### Imports
 
