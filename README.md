@@ -81,7 +81,7 @@ Initialize a new session with `alias` and `metadata`
 Get liveness step details using the `FindSessionStep` helper method 
 ```go
 	{
-		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
+		livenessStep, err := sessionDetails.FindSessionStep(models.LivenessStep)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
@@ -90,8 +90,13 @@ Get liveness step details using the `FindSessionStep` helper method
 			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 		}
 		fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
-		if livenessStep.Status == string(individual.Approved) {
+
+		if livenessStep.Status == models.Approved {
 			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+		}
+
+		if livenessStep.Status == models.Rejected {
+			fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
 		}
 	}
 ```
@@ -99,7 +104,7 @@ Get liveness step details using the `FindSessionStep` helper method
 Get ID document step details without helper method
 ```go
 	{
-		var IDDocumentStep *Step
+		var IDDocumentStep *models.Step
 		for _, step := range sessionDetails.Session.Steps {
 			if step.Type == models.IDDocument {
 				IDDocumentStep = &step
@@ -114,7 +119,8 @@ Get ID document step details without helper method
 			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
 		}
 		fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
-		if idDocumentStepDetails.Status == string(individual.Pending) || idDocumentStepDetails.Status == string(individual.Approved) {
+
+		if idDocumentStepDetails.Status == models.Pending || idDocumentStepDetails.Status == models.Approved {
 			fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
 		}
 	}

@@ -29,7 +29,7 @@ func main() {
 	// Getting liveness step details with FindSessionStep helper method
 
 	{
-		livenessStep, err := sessionDetails.FindSessionStep(models.Liveness)
+		livenessStep, err := sessionDetails.FindSessionStep(models.LivenessStep)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
@@ -44,6 +44,10 @@ func main() {
 		if livenessStep.Status == models.Approved {
 			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
 		}
+
+		if livenessStep.Status == models.Rejected {
+			fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+		}
 	}
 
 	// Getting id document step details without helper method
@@ -51,7 +55,7 @@ func main() {
 	{
 		var IDDocumentStep *models.Step
 		for _, step := range sessionDetails.Session.Steps {
-			if step.Type == models.IDDocument {
+			if step.Type == models.IDDocumentStep {
 				IDDocumentStep = &step
 				break
 			}
@@ -79,15 +83,15 @@ func main() {
 	{
 		for _, step := range sessionDetails.Session.Steps {
 			switch step.Type {
-			case models.Liveness:
+			case models.LivenessStep:
 				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-			case models.IDDocument:
+			case models.IDDocumentStep:
 				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-			case models.Email:
+			case models.EmailStep:
 				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-			case models.Phone:
+			case models.PhoneStep:
 				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-			case models.ProofOfAddress:
+			case models.ProofOfAddressStep:
 				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}
