@@ -142,7 +142,6 @@ type PhoneStepDetails struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Timeline     []any
 	Verification PhoneData `json:"verification"`
 }
 
@@ -153,7 +152,6 @@ type EmailStepDetails struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Timeline     []any
 	Verification EmailData `json:"verification"`
 }
 
@@ -164,7 +162,6 @@ type ProofOfAddressStepDetails struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Timeline []any
 	Document ProofOfAddressData `json:"document"`
 }
 
@@ -175,7 +172,6 @@ type IDDocumentStepDetails struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Timeline []any
 	Document IdDocumentData `json:"document"`
 }
 

@@ -74,10 +74,6 @@ Initialize a new session with `alias` and `metadata`:
 ```go
 alias := "john-doe"
 initSessionRes, err := synapsClient.InitSession(&alias, map[string]string{"email": "john.doe@gmail.com"})
-if err != nil {
-    log.Fatalf("failed to init session: %s", err)
-}
-sessionID := initSessionRes.SessionID
 ```
 
 ### Get session details
