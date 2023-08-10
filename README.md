@@ -10,7 +10,6 @@ Individual sessions, represent a Know Your Customer (KYC) session for a given us
 
 > For more details the Synaps API documentation can be found at [https://docs.synaps.io](https://docs.synaps.io).
 
-
 ## Installation
 
 To use the Synaps Go SDK, you can add it as a dependency in your project using `go get`:
@@ -36,7 +35,7 @@ This section provides an overview of the basic steps to integrate the SDK into y
 
 > You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
 
-### Imports 
+### Imports
 
 ```go
 import (
@@ -47,13 +46,13 @@ import (
 
 ### Configuring client
 
-Create a new Synaps client from environment variables:
+Create a new Synaps client from environment variables or `.env` file:
 
 ```go
 synapsClient := individual.NewClientFromEnv()
 ```
-Or create it from variables:
 
+Or create it from variables:
 ```go
 synapsClient := individual.NewClient("BASE_URL", "API_KEY")
 ```
