@@ -33,7 +33,7 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.  
 This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.  
 
-> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
+> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/exemples/individual/main.go) file within the repository.
 
 ### Imports
 
@@ -151,7 +151,7 @@ for _, step := range sessionDetails.Session.Steps {
 
 For more details on the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
 
-## License
+# License
 
 This SDK is released under the [MIT License](LICENSE). Feel free to review the terms of the license in the provided [LICENSE](LICENSE) file.
 
