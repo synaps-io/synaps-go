@@ -1,7 +1,7 @@
 # Synaps Go SDK
 
-The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions.
-Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, ...).
+The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions.  
+Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, ...).  
 
 > For more details the Synaps API documentation can be found at [https://docs.synaps.io](https://docs.synaps.io).
 
@@ -25,8 +25,8 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 
 ## Usage
 
-The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.
-This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.
+The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.  
+This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.  
 
 > You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
 
@@ -66,7 +66,7 @@ sessionID := initSessionRes.SessionID
 ```
 
 ### Get session details
-(see (documentation)[https://docs.synaps.io/session#get-session-details] for details about get session details response)
+(see [documentation](https://docs.synaps.io/session#get-session-details) for details about get session details response)
 
 ```go
 sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
@@ -78,7 +78,7 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
 
 ### Get step details 
-(see (documentation)[https://docs.synaps.io/steps#get-step-details] for details about get step details response)
+(see [documentation](https://docs.synaps.io/steps#get-step-details) for details about get step details response)
 
 Get liveness step details using the `FindSessionStep` helper method:
 ```go
