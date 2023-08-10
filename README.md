@@ -59,13 +59,23 @@ synapsClient := individual.NewClient("BASE_URL", "API_KEY")
 
 ### Init session
 
+Initialize a new session:
+
+```go
+initSessionRes, err := synapsClient.InitSession(nil, nil)
+if err != nil {
+    log.Fatalf("failed to init session: %s", err)
+}
+sessionID := initSessionRes.SessionID
+```
+
 Initialize a new session with `alias` and `metadata`:
 
 ```go
-req := InitSessionRequest{Alias: "username", Metadata: map[string]string{"email", "john.doe@gmail.com"}}
-initSessionRes, err := synapsClient.InitSession(req)
+alias := "john-doe"
+initSessionRes, err := synapsClient.InitSession(&alias, map[string]string{"email": "john.doe@gmail.com"})
 if err != nil {
-	log.Fatalf("failed to init session: %s", err)
+    log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
 ```

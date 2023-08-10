@@ -1,15 +1,5 @@
 package models
 
-type SynapsStep string
-
-const (
-	LivenessStep       SynapsStep = "LIVENESS"
-	IDDocumentStep     SynapsStep = "ID_DOCUMENT"
-	ProofOfAddressStep SynapsStep = "PROOF_OF_ADDRESS"
-	EmailStep          SynapsStep = "EMAIL"
-	PhoneStep          SynapsStep = "PHONE"
-)
-
 type SynapsStatus string
 
 const (

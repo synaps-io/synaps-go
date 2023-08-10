@@ -11,8 +11,8 @@ import (
 func main() {
 	synapsClient := individual.NewClientFromEnv()
 
-	req := models.InitSessionRequest{Alias: "username", Metadata: map[string]string{"email": "john.doe@gmail.com"}}
-	initSessionRes, err := synapsClient.InitSession(req)
+	alias := "john-doe"
+	initSessionRes, err := synapsClient.InitSession(&alias, map[string]string{"email": "john.doe@gmail.com"})
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}

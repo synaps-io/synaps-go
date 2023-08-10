@@ -19,7 +19,7 @@ type Client struct {
 }
 
 type IndividualClient interface {
-	InitSession(InitSessionRequest) (InitSessionResponse, error)
+	InitSession(alias *string, metadata map[string]string) (InitSessionResponse, error)
 	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
 	GetStepLivenessDetails(sessionID string, stepID string) (LivenessStepDetails, error)
 	GetStepPhoneDetails(sessionID string, stepID string) (PhoneStepDetails, error)
