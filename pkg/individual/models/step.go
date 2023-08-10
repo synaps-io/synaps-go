@@ -1,5 +1,53 @@
 package models
 
+type ReasonCode string
+
+const (
+	ForgedRejection              ReasonCode = "FORGED_REJECTION"
+	DocumentHidden               ReasonCode = "DOCUMENT_HIDDEN"
+	BadEnvironment               ReasonCode = "BAD_ENVIRONMENT"
+	BlackWhitePicture            ReasonCode = "BLACK_WHITE_PICTURE"
+	BadQuality                   ReasonCode = "BAD_QUALITY"
+	DocumentCompliance           ReasonCode = "DOCUMENT_COMPLIANCE"
+	IdentityDocumentExpired      ReasonCode = "IDENTITY_DOCUMENT_EXPIRED"
+	DocumentInvalidFrontSide     ReasonCode = "DOCUMENT_INVALID_FRONT_SIDE"
+	DocumentInvalidBackSide      ReasonCode = "DOCUMENT_INVALID_BACK_SIDE"
+	IdentityDocumentDobDateMinor ReasonCode = "IDENTITY_DOCUMENT_DOB_DATE_MINOR"
+	RestrictedNationalityType    ReasonCode = "RESTRICTED_NATIONALITY_TYPE"
+)
+
+type IDDocumentType string
+
+const (
+	Passport       IDDocumentType = "PASSPORT"
+	NationalID     IDDocumentType = "NATIONAL_ID"
+	DriverLicense  IDDocumentType = "DRIVER_LICENSE"
+	ResidentPermit IDDocumentType = "RESIDENT_PERMIT"
+)
+
+type ProofOfAddressDocumentType string
+
+const (
+	ElectricityBill ProofOfAddressDocumentType = "ELECTRICITY_BILL"
+	InternetBill    ProofOfAddressDocumentType = "INTERNET_BILL"
+	LandlineBill    ProofOfAddressDocumentType = "LANDLINE_BILL"
+	WaterBill       ProofOfAddressDocumentType = "WATER_BILL"
+	GasBill         ProofOfAddressDocumentType = "GAS_BILL"
+	BankStatement   ProofOfAddressDocumentType = "BANK_STATEMENT"
+)
+
+type PhoneMethod string
+
+const (
+	Sms  PhoneMethod = "sms"
+	Call PhoneMethod = "call"
+)
+
+type StepReason struct {
+	Code    ReasonCode
+	Message string
+}
+
 type File struct {
 	URL  string `json:"url"`
 	Type string `json:"type"`
@@ -8,8 +56,8 @@ type File struct {
 
 type (
 	IdDocumentData struct {
-		Country string `json:"country"`
-		Type    string `json:"type"`
+		Country string         `json:"country"`
+		Type    IDDocumentType `json:"type"`
 		Fields  struct {
 			Firstname          string `json:"firstname"`
 			Lastname           string `json:"lastname"`
@@ -30,7 +78,7 @@ type (
 	}
 	ProofOfAddressData struct {
 		Country string `json:"country"`
-		Type    string `json:"type"`
+		Type    string `json:"type"` // Either IDDocumentType or ProofOfAddressDocumentType
 		Fields  struct {
 			Address     string `json:"address"`
 			City        string `json:"city"`
@@ -49,10 +97,10 @@ type (
 	}
 	PhoneData struct {
 		Phone struct {
-			CallingCode string `json:"calling_code"`
-			Country     string `json:"country"`
-			Method      string `json:"method"`
-			Number      string `json:"number"`
+			CallingCode string      `json:"calling_code"`
+			Country     string      `json:"country"`
+			Method      PhoneMethod `json:"method"`
+			Number      string      `json:"number"`
 		} `json:"phone"`
 	}
 	EmailData struct {
@@ -67,7 +115,7 @@ type (
 	}
 )
 
-type Metadata struct {
+type StepMetadata struct {
 	IP               string `json:"ip"`
 	UserAgent        string `json:"user_agent"`
 	Platform         string `json:"platform"`
@@ -78,55 +126,55 @@ type Metadata struct {
 }
 
 type PhoneStepDetails struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Metadata Metadata `json:"metadata"`
-	Status   string   `json:"status"`
-	Reason   string   `json:"reason"`
+	ID       string       `json:"id"`
+	Type     SynapsStep   `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   SynapsStatus `json:"status"`
+	Reason   StepReason   `json:"reason"`
 
 	Timeline     []any
 	Verification PhoneData `json:"verification"`
 }
 
 type EmailStepDetails struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Metadata Metadata `json:"metadata"`
-	Status   string   `json:"status"`
-	Reason   string   `json:"reason"`
+	ID       string       `json:"id"`
+	Type     SynapsStep   `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   SynapsStatus `json:"status"`
+	Reason   StepReason   `json:"reason"`
 
 	Timeline     []any
 	Verification EmailData `json:"verification"`
 }
 
 type ProofOfAddressStepDetails struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Metadata Metadata `json:"metadata"`
-	Status   string   `json:"status"`
-	Reason   string   `json:"reason"`
+	ID       string       `json:"id"`
+	Type     SynapsStep   `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   SynapsStatus `json:"status"`
+	Reason   StepReason   `json:"reason"`
 
 	Timeline []any
 	Document ProofOfAddressData `json:"document"`
 }
 
 type IDDocumentStepDetails struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Metadata Metadata `json:"metadata"`
-	Status   string   `json:"status"`
-	Reason   string   `json:"reason"`
+	ID       string       `json:"id"`
+	Type     SynapsStep   `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   SynapsStatus `json:"status"`
+	Reason   StepReason   `json:"reason"`
 
 	Timeline []any
 	Document IdDocumentData `json:"document"`
 }
 
 type LivenessStepDetails struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Metadata Metadata `json:"metadata"`
-	Status   string   `json:"status"`
-	Reason   string   `json:"reason"`
+	ID       string       `json:"id"`
+	Type     SynapsStep   `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   SynapsStatus `json:"status"`
+	Reason   StepReason   `json:"reason"`
 
 	Timeline     []any
 	Verification LivenessData `json:"verification"`

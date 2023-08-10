@@ -1,6 +1,6 @@
 # Synaps Go SDK
 
-The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions. Individual sessions, in the context of this SDK, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, ...).
+The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions. Individual sessions, in the context of this SDK, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, ...).
 
 For more details the Synaps API documentation can be found at [https://docs.synaps.io](https://docs.synaps.io).
 
@@ -16,25 +16,25 @@ go get github.com/synaps.io/synaps-sdk-go/pkg/individual
 
 Before you start using the Synaps Go SDK, ensure that you have the following:
 
-- **Go Programming Language**: The Synaps Go SDK requires Go 1.19 or higher.
+- **Go Programming Language**: requires Go 1.19 or higher.
 
-- **Synaps API Credentials**: To use the SDK, you need to have your Synaps API credentials, including the API key or other authentication details. Theses can be found on the manager app [https://manager-kyc.synaps.io](https://manager-kyc.synaps.io)
+- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the manager app in the developer section of your app [https://manager-kyc.synaps.io](https://manager-kyc.synaps.io)
+
+- **Synaps base url**: The synaps endpoint
 
 ## Usage
 
-Import the required packages and use the SDK to interact with the Synaps API.
+The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks. This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.
 
 ### Imports 
 
 Import the sdk and models
 
 ```go
-
 import (
 	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
-
 ```
 
 ### Configuring client
@@ -43,7 +43,6 @@ Create a new Synaps client from environment variables
 
 ```go
 	synapsClient := individual.NewClientFromEnv()
-
 ```
 Or create it from variables
 
@@ -53,34 +52,33 @@ Or create it from variables
 
 ### Init session
 
-Initialize a new session with `alias` 
+Initialize a new session with `alias` and `metadata`
 
 ```go
-	req := InitSessionRequest{Alias: "12345"}
+	req := InitSessionRequest{Alias: "username", Metadata: map[string]string{"email", "john.doe@gmail.com"}}
 	initSessionRes, err := synapsClient.InitSession(req)
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
 	sessionID := initSessionRes.SessionID
-
 ```
 
 ### Get session details
+(see [https://docs.synaps.io/session#get-session-details] for details about get session details response)
 
-Get session details (see [https://docs.synaps.io/session#get-session-details] for details about get session details response)
 ```go
 	sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
 	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
-
 ```
 
 
 ### Get step details 
+(see [https://docs.synaps.io/steps#get-step-details] for details about get step details response)
 
-Get liveness step details using the `FindSessionStep` helper method (see [https://docs.synaps.io/steps#get-step-details] for details about get step details response)
+Get liveness step details using the `FindSessionStep` helper method 
 ```go
 	{
 		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
@@ -103,7 +101,7 @@ Get ID document step details without helper method
 	{
 		var IDDocumentStep *Step
 		for _, step := range sessionDetails.Session.Steps {
-			if step.Type == individual.IDDocument {
+			if step.Type == models.IDDocument {
 				IDDocumentStep = &step
 				break
 			}
@@ -127,21 +125,20 @@ Iterating over steps
 	{
 		for _, step := range sessionDetails.Session.Steps {
 			switch step.Type {
-			case individual.Liveness:
+			case models.Liveness:
 				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-			case individual.IDDocument:
+			case models.IDDocument:
 				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-			case individual.Email:
+			case models.Email:
 				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-			case individual.Phone:
+			case models.Phone:
 				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-			case individual.ProofOfAddress:
+			case models.ProofOfAddress:
 				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}
 	}
 }
-
 ```
 
 > You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps/blob/main/exemples/individual/main.go) file within the repository.
@@ -150,3 +147,6 @@ Iterating over steps
 
 For more details on the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
 
+## License
+
+This SDK is released under the [MIT License](LICENSE). Feel free to review the terms of the license in the provided [LICENSE](LICENSE) file.

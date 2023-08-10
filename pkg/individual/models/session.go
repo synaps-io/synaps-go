@@ -8,8 +8,8 @@ type InitSessionResponse struct {
 }
 
 type InitSessionRequest struct {
-	Metadata map[string]any `json:"metadata,omitempty"`
-	Alias    string         `json:"alias,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
+	Alias    string            `json:"alias,omitempty"`
 }
 
 type SessionDetailsResponse struct {
@@ -18,21 +18,21 @@ type SessionDetailsResponse struct {
 		ID   string `json:"id"`
 	} `json:"app"`
 	Session struct {
-		ID      string `json:"id"`
-		Alias   string `json:"alias"`
-		Status  string `json:"status"`
-		Sandbox bool   `json:"sandbox"`
-		Steps   []Step `json:"steps"`
+		ID      string       `json:"id"`
+		Alias   string       `json:"alias"`
+		Status  SynapsStatus `json:"status"`
+		Sandbox bool         `json:"sandbox"`
+		Steps   []Step       `json:"steps"`
 	} `json:"session"`
 }
 
 type Step struct {
-	ID     string `json:"id"`
-	Status string `json:"status"`
-	Type   string `json:"type"`
+	ID     string       `json:"id"`
+	Status SynapsStatus `json:"status"`
+	Type   SynapsStep   `json:"type"`
 }
 
-func (details *SessionDetailsResponse) FindSessionStep(stepType string) (*Step, error) {
+func (details *SessionDetailsResponse) FindSessionStep(stepType SynapsStep) (*Step, error) {
 	for _, step := range details.Session.Steps {
 		if step.Type == stepType {
 			return &step, nil

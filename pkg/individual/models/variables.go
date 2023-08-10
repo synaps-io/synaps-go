@@ -1,11 +1,13 @@
-package individual
+package models
+
+type SynapsStep string
 
 const (
-	Liveness       = "LIVENESS"
-	IDDocument     = "ID_DOCUMENT"
-	ProofOfAddress = "PROOF_OF_ADDRESS"
-	Email          = "EMAIL"
-	Phone          = "PHONE"
+	Liveness       SynapsStep = "LIVENESS"
+	IDDocument     SynapsStep = "ID_DOCUMENT"
+	ProofOfAddress SynapsStep = "PROOF_OF_ADDRESS"
+	Email          SynapsStep = "EMAIL"
+	Phone          SynapsStep = "PHONE"
 )
 
 type SynapsStatus string

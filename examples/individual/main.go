@@ -5,20 +5,18 @@ import (
 	"log"
 
 	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 func main() {
 	synapsClient := individual.NewClientFromEnv()
 
-	req := InitSessionRequest{Alias: "12345"}
-
+	req := models.InitSessionRequest{Alias: "username", Metadata: map[string]string{"email": "john.doe@gmail.com"}}
 	initSessionRes, err := synapsClient.InitSession(req)
-	sessionID := initSessionRes.SessionID
-
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
+	sessionID := initSessionRes.SessionID
 
 	// Getting session details
 
@@ -26,13 +24,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
-
 	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
 	// Getting liveness step details with FindSessionStep helper method
 
 	{
-		livenessStep, err := sessionDetails.FindSessionStep(individual.Liveness)
+		livenessStep, err := sessionDetails.FindSessionStep(models.Liveness)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
@@ -44,7 +41,7 @@ func main() {
 
 		fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
 
-		if livenessStep.Status == string(individual.Approved) {
+		if livenessStep.Status == models.Approved {
 			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
 		}
 	}
@@ -52,9 +49,9 @@ func main() {
 	// Getting id document step details without helper method
 
 	{
-		var IDDocumentStep *Step
+		var IDDocumentStep *models.Step
 		for _, step := range sessionDetails.Session.Steps {
-			if step.Type == individual.IDDocument {
+			if step.Type == models.IDDocument {
 				IDDocumentStep = &step
 				break
 			}
@@ -71,7 +68,7 @@ func main() {
 
 		fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
 
-		if idDocumentStepDetails.Status == string(individual.Pending) || idDocumentStepDetails.Status == string(individual.Approved) {
+		if idDocumentStepDetails.Status == models.Pending || idDocumentStepDetails.Status == models.Approved {
 			fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
 		}
 
@@ -82,15 +79,15 @@ func main() {
 	{
 		for _, step := range sessionDetails.Session.Steps {
 			switch step.Type {
-			case individual.Liveness:
+			case models.Liveness:
 				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-			case individual.IDDocument:
+			case models.IDDocument:
 				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-			case individual.Email:
+			case models.Email:
 				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-			case individual.Phone:
+			case models.Phone:
 				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-			case individual.ProofOfAddress:
+			case models.ProofOfAddress:
 				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}
