@@ -26,6 +26,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Unmarshaling body
 	var payload synaps.WebhookPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, "Error unmarshaling request body", http.StatusInternalServerError)
@@ -39,6 +40,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Handling event
 	handleEvent(payload)
 
 	w.WriteHeader(http.StatusOK)

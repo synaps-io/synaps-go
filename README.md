@@ -1,8 +1,5 @@
 # Synaps Go SDK
 
-# Corporate (Coming soon)
-...
-
 # Individual 
 
 The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions.  
@@ -33,7 +30,7 @@ This section provides an overview of the basic steps to integrate the SDK into y
 
 > You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/main.go) file within the repository.
 
-### Import
+#### Import
 
 ```go
 import (
@@ -41,7 +38,7 @@ import (
 )
 ```
 
-### Configuring client
+#### Configuring client
 
 Set the `SYNAPS_API_KEY` env variable to your api key and create a new Synaps client from environment: 
 
@@ -55,7 +52,7 @@ Or create it from variables:
 synapsClient := synaps.NewClient("API_KEY")
 ```
 
-### Init session
+#### Init session
 
 Initialize a new session:
 
@@ -74,7 +71,7 @@ alias := "john-doe"
 initSessionRes, err := synapsClient.InitSession(&alias)
 ```
 
-### Get session details
+#### Get session details
 (see [documentation](https://docs.synaps.io/session#get-session-details) for details about get session details response)
 
 ```go
@@ -86,7 +83,7 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 ```
 
 
-### Get step details 
+#### Get step details 
 (see [documentation](https://docs.synaps.io/steps#get-step-details) for details about get step details response)
 
 Get liveness step details using the `FindSessionStep` helper method:
@@ -158,20 +155,32 @@ for _, step := range sessionDetails.Session.Steps {
 
 ### Webhooks
 
-iIn order to receive webhooks, you'll need to create an endpoint that can receive and handle the webhook events. Below is an example of how to set up the necessary components.
+In order to receive webhooks, you'll need to create an endpoint that can receive and handle the webhook events. Below is an example of how to set up the necessary components.
 
-First, create your handler function for processing incoming webhooks:
+> You can check the full example in the [exemples/individual/webhook/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/webhook/main.go) file within the repository.
+
+First, import packages:
 ```go
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
+```
 
+Then create your handler function for processing incoming webhooks:
+```go
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
+    // Unmarshaling body
 	var payload synaps.WebhookPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, "Error unmarshaling request body", http.StatusInternalServerError)
@@ -179,17 +188,20 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+    // Checking for secret
 	if r.URL.Query().Get("secret") != os.Getenv("secret") {
 		log.Printf("Error wrong webhook secret")
 		http.Error(w, "Error invalid secret", http.StatusUnauthorized)
 		return
 	}
 
+	handleEvent(payload)
+
 	w.WriteHeader(http.StatusOK)
 }
 ```
 
-Then create the function that handles event itself:
+Create the function that handles event itself:
 ```go
 func handleEvent(payload synaps.WebhookPayload) {
 	switch payload.Status {
@@ -197,27 +209,12 @@ func handleEvent(payload synaps.WebhookPayload) {
 		log.Printf("Received event: APPROVED")
 	case synaps.EventRejected:
 		log.Printf("Received event: REJECTED")
-    // ...
+        // ...
 	}
 }
 ```
 
-Add it to you http handler function:
-```go
-// Previous code...
-
-if r.URL.Query().Get("secret") != os.Getenv("SYNAPS_WEBHOOK_SECRET") {
-	log.Printf("Error wrong webhook secret")
-	http.Error(w, "Error invalid secret", http.StatusUnauthorized)
-	return
-}
-
-handleEvent(payload)
-
-w.WriteHeader(http.StatusOK)
-```
-
-Then serve your endpoint and check for secret:
+Serve your endpoint:
 ```go
 func main() {
 	_, ok := os.LookupEnv("SYNAPS_WEBHOOK_SECRET")
@@ -226,18 +223,26 @@ func main() {
 	}
 
 	http.HandleFunc("/webhook", handleWebhook)
-	fmt.Println("Webhook server listening on port 8080...")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Webhook server listening on port 80...")
+	http.ListenAndServe(":80", nil)
 }
 ```
-> Deploy your endpoint to the internet so webhook server can reach it
+> Ensure that your endpoint is reachable for the internet so webhook server can reach it
 
-Once your endpoint is available on the internet you can add your endpoint to synaps [manager app](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks)) and export `SYNAPS_WEBHOOK_SECRET` so you can make sure you receiving event from synaps
+Once its done you can add your endpoint URL to synaps [manager app](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks))  
 
+And you're done !
+
+Remember to keep it secure by:
+- Checking for secret in the query so you can make sure you're receiving event from synaps (like in the [exemple](https://github.com/synaps-hub/synaps-sdk-go/blob/main/README.md?plain=1#L192) below) 
+- Using https to enable secured communication
 
 ## API Reference
 
 For more details on the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
+
+# Corporate (Coming soon)
+...
 
 # License
 
