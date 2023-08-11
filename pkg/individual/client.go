@@ -1,4 +1,4 @@
-package individual
+package synaps
 
 import (
 	"encoding/json"
@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 type Client struct {
@@ -18,13 +17,17 @@ type Client struct {
 	baseURL    string
 }
 
-type IndividualService interface {
-	InitSession() (InitSessionResponse, error)
+type IndividualClient interface {
+	InitSession(alias *string) (InitSessionResponse, error)
 	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
-	GetStepDetails(sessionID string, stepID string) (any, error)
+	GetStepLivenessDetails(sessionID string, stepID string) (LivenessStepDetailsResponse, error)
+	GetStepPhoneDetails(sessionID string, stepID string) (PhoneStepDetailsResponse, error)
+	GetStepIDDocumentDetails(sessionID string, stepID string) (IDDocumentStepDetailsResponse, error)
+	GetStepEmailDetails(sessionID string, stepID string) (EmailStepDetailsResponse, error)
+	GetStepProofOfAddressDetails(sessionID string, stepID string) (ProofOfAddressStepDetailsResponse, error)
 }
 
-func NewClient(baseURL string, apiKey string) *Client {
+func NewClient(baseURL string, apiKey string) IndividualClient {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
@@ -32,7 +35,7 @@ func NewClient(baseURL string, apiKey string) *Client {
 	}
 }
 
-func NewClientFromEnv() *Client {
+func NewClientFromEnv() IndividualClient {
 	godotenv.Load()
 
 	apiKey, ok := os.LookupEnv("SYNAPS_API_KEY")
@@ -42,7 +45,7 @@ func NewClientFromEnv() *Client {
 
 	baseURL, ok := os.LookupEnv("SYNAPS_BASE_URL")
 	if !ok {
-		log.Fatalf("Missing required SYNAPS_BASE_URL env variable")
+		baseURL = "api.synaps.io"
 	}
 
 	return NewClient(baseURL, apiKey)
@@ -61,6 +64,16 @@ func makeRequest[T any](httpClient *http.Client, method string, path string, bod
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make init session request: %w", err)
+	}
+
+	if !(res.StatusCode >= 200 && res.StatusCode < 300) {
+		var error Error
+		if err := json.NewDecoder(res.Body).Decode(&error); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal error output: %w", err)
+		}
+		defer res.Body.Close()
+
+		return nil, fmt.Errorf("request failed with status code %d: %s", res.StatusCode, error.Message)
 	}
 
 	var output T

@@ -1,9 +1,11 @@
-package individual
+package synaps
+
+type SynapsStatus string
 
 const (
-	Liveness       = "LIVENESS"
-	IDDocument     = "ID_DOCUMENT"
-	ProofOfAddress = "PROOF_OF_ADDRESS"
-	Email          = "EMAIL"
-	Phone          = "PHONE"
+	StatusRejected             SynapsStatus = "REJECTED"
+	StatusSubmissionRequired   SynapsStatus = "SUBMISSION_REQUIRED"
+	StatusResubmissionRequired SynapsStatus = "RESUBMISSION_REQUIRED"
+	StatusPending              SynapsStatus = "PENDING_VERIFICATION"
+	StatusApproved             SynapsStatus = "APPROVED"
 )
