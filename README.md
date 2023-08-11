@@ -15,7 +15,7 @@ Individual sessions, represent a Know Your Customer (KYC) session for a given us
 To use the Synaps Go SDK, you can add it as a dependency in your project using `go get`:
 
 ```bash
-go get github.com/synaps.io/synaps-sdk-go/pkg/individual
+go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
 ```
 
 ## Requirements
@@ -24,9 +24,7 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 
 - **Go Programming Language**: requires Go 1.19 or higher.
 
-- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the [manager app](https://manager-kyc.synaps.io) in the developer section of your app
-
-- **Synaps base url**: The synaps endpoint
+- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the [manager app](https://manager-kyc.synaps.io) in the developer section of your app.
 
 ## Usage
 
@@ -46,15 +44,16 @@ import (
 
 ### Configuring client
 
-Create a new Synaps client from environment variables or `.env` file:
+Set the `SYNAPS_API_KEY` env variable to your api key and create a new Synaps client from environment: 
 
 ```go
 synapsClient := individual.NewClientFromEnv()
 ```
+> This will also check for `.env` file
 
 Or create it from variables:
 ```go
-synapsClient := individual.NewClient("BASE_URL", "API_KEY")
+synapsClient := individual.NewClient("API_KEY")
 ```
 
 ### Init session
@@ -62,18 +61,18 @@ synapsClient := individual.NewClient("BASE_URL", "API_KEY")
 Initialize a new session:
 
 ```go
-initSessionRes, err := synapsClient.InitSession(nil, nil)
+initSessionRes, err := synapsClient.InitSession(nil)
 if err != nil {
     log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
 ```
 
-Initialize a new session with `alias` and `metadata`:
+Initialize a new session with `alias`:
 
 ```go
 alias := "john-doe"
-initSessionRes, err := synapsClient.InitSession(&alias, map[string]string{"email": "john.doe@gmail.com"})
+initSessionRes, err := synapsClient.InitSession(&alias)
 ```
 
 ### Get session details

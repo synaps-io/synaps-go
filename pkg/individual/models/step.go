@@ -135,7 +135,7 @@ type StepMetadata struct {
 	CustomerLanguage string `json:"customer_language"`
 }
 
-type PhoneStepDetails struct {
+type PhoneStepDetailsResponse struct {
 	ID       string       `json:"id"`
 	Type     SynapsStep   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
@@ -145,7 +145,7 @@ type PhoneStepDetails struct {
 	Verification PhoneData `json:"verification"`
 }
 
-type EmailStepDetails struct {
+type EmailStepDetailsResponse struct {
 	ID       string       `json:"id"`
 	Type     SynapsStep   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
@@ -155,7 +155,7 @@ type EmailStepDetails struct {
 	Verification EmailData `json:"verification"`
 }
 
-type ProofOfAddressStepDetails struct {
+type ProofOfAddressStepDetailsResponse struct {
 	ID       string       `json:"id"`
 	Type     SynapsStep   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
@@ -165,7 +165,7 @@ type ProofOfAddressStepDetails struct {
 	Document ProofOfAddressData `json:"document"`
 }
 
-type IDDocumentStepDetails struct {
+type IDDocumentStepDetailsResponse struct {
 	ID       string       `json:"id"`
 	Type     SynapsStep   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
@@ -175,7 +175,7 @@ type IDDocumentStepDetails struct {
 	Document IdDocumentData `json:"document"`
 }
 
-type LivenessStepDetails struct {
+type LivenessStepDetailsResponse struct {
 	ID       string       `json:"id"`
 	Type     SynapsStep   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`

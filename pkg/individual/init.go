@@ -8,8 +8,8 @@ import (
 	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
-func (c *Client) InitSession(alias *string, metadata map[string]string) (sessionID InitSessionResponse, err error) {
-	req := InitSessionRequest{Metadata: metadata}
+func (c *Client) InitSession(alias *string) (sessionID InitSessionResponse, err error) {
+	req := InitSessionRequest{}
 	if alias != nil {
 		req.Alias = *alias
 	}

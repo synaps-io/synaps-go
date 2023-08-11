@@ -19,13 +19,13 @@ type Client struct {
 }
 
 type IndividualClient interface {
-	InitSession(alias *string, metadata map[string]string) (InitSessionResponse, error)
+	InitSession(alias *string) (InitSessionResponse, error)
 	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
-	GetStepLivenessDetails(sessionID string, stepID string) (LivenessStepDetails, error)
-	GetStepPhoneDetails(sessionID string, stepID string) (PhoneStepDetails, error)
-	GetStepIDDocumentDetails(sessionID string, stepID string) (IDDocumentStepDetails, error)
-	GetStepEmailDetails(sessionID string, stepID string) (EmailStepDetails, error)
-	GetStepProofOfAddressDetails(sessionID string, stepID string) (ProofOfAddressStepDetails, error)
+	GetStepLivenessDetails(sessionID string, stepID string) (LivenessStepDetailsResponse, error)
+	GetStepPhoneDetails(sessionID string, stepID string) (PhoneStepDetailsResponse, error)
+	GetStepIDDocumentDetails(sessionID string, stepID string) (IDDocumentStepDetailsResponse, error)
+	GetStepEmailDetails(sessionID string, stepID string) (EmailStepDetailsResponse, error)
+	GetStepProofOfAddressDetails(sessionID string, stepID string) (ProofOfAddressStepDetailsResponse, error)
 }
 
 func NewClient(baseURL string, apiKey string) IndividualClient {
@@ -46,7 +46,7 @@ func NewClientFromEnv() IndividualClient {
 
 	baseURL, ok := os.LookupEnv("SYNAPS_BASE_URL")
 	if !ok {
-		log.Fatalf("Missing required SYNAPS_BASE_URL env variable")
+		baseURL = "api.synaps.io"
 	}
 
 	return NewClient(baseURL, apiKey)

@@ -12,7 +12,7 @@ func main() {
 	synapsClient := individual.NewClientFromEnv()
 
 	alias := "john-doe"
-	initSessionRes, err := synapsClient.InitSession(&alias, map[string]string{"email": "john.doe@gmail.com"})
+	initSessionRes, err := synapsClient.InitSession(&alias)
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
