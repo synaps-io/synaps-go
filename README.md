@@ -2,14 +2,14 @@
 
 # Individual 
 
-The Individual Synaps Go SDK provides a convenient way to interact with the Synaps API for individual sessions.  
-Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, ...).  
+The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.  
+Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).  
 
-> For more details the Synaps API documentation can be found at [https://docs.synaps.io](https://docs.synaps.io).
+> For more details, please refer to the Synaps API documentation at [https://docs.synaps.io](https://docs.synaps.io).
 
 ## Installation
 
-To use the Synaps Go SDK, you can add it as a dependency in your project using `go get`:
+To use the Synaps Individual Go SDK, you can add it as a dependency in your project using `go get`:
 
 ```bash
 go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
@@ -17,7 +17,7 @@ go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
 
 ## Requirements
 
-Before you start using the Synaps Go SDK, ensure that you have the following:
+Before you start using this SDK, ensure that you have the following:
 
 - **Go Programming Language**: requires Go 1.19 or higher.
 
@@ -25,10 +25,10 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 
 ## Usage
 
-The SDK allows initiating sessions, tracking user KYC progress, retrieving verification results, and event handling using webhooks.  
-This section provides an overview of the basic steps to integrate the SDK into your project and begin utilizing its features.  
+The SDK facilitates the initiation of sessions, tracking user KYC progress, retrieving verification results, and handling events through webhooks.  
+This section provides an overview of the fundamental steps to integrate the SDK into your project and start leveraging its functionalities.
 
-> You can check the full example in the [exemples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/main.go) file within the repository.
+> A complete example can be found in the [examples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/main.go) file within the repository.
 
 #### Import
 
@@ -52,7 +52,7 @@ Or create it from variables:
 synapsClient := synaps.NewClient("API_KEY")
 ```
 
-#### Init session
+#### Initialize session
 
 Initialize a new session:
 
@@ -64,7 +64,7 @@ if err != nil {
 sessionID := initSessionRes.SessionID
 ```
 
-Initialize a new session with `alias`:
+Initialize a new session with an `alias`:
 
 ```go
 alias := "john-doe"
@@ -72,7 +72,8 @@ initSessionRes, err := synapsClient.InitSession(&alias)
 ```
 
 #### Get session details
-(see [documentation](https://docs.synaps.io/session#get-session-details) for details about get session details response)
+
+(Refer to the [documentation](https://docs.synaps.io/session#get-session-details) for details about the session details response)
 
 ```go
 sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
@@ -84,7 +85,7 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
 
 #### Get step details 
-(see [documentation](https://docs.synaps.io/steps#get-step-details) for details about get step details response)
+(Refer to the [documentation](https://docs.synaps.io/steps#get-step-details) for details about the step details response)
 
 Get liveness step details using the `FindSessionStep` helper method:
 ```go
@@ -135,7 +136,7 @@ if idDocumentStepDetails.Status == synaps.StatusPending || idDocumentStepDetails
 }
 ```
 
-Iterating over steps:
+Iterating through steps:
 ```go
 for _, step := range sessionDetails.Session.Steps {
 	switch step.Type {
@@ -157,7 +158,7 @@ for _, step := range sessionDetails.Session.Steps {
 
 In order to receive webhooks, you'll need to create an endpoint that can receive and handle the webhook events. Below is an example of how to set up the necessary components.
 
-> You can check the full example in the [exemples/individual/webhook/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/webhook/main.go) file within the repository.
+> You can find the complete example in the [examples/individual/webhook/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/webhook/main.go) file within the repository.
 
 #### Import
 ```go
@@ -173,7 +174,7 @@ import (
 ```
 
 #### Handle webhook
-Create your handler function for processing incoming request:
+Create your handler function for processing incoming requests:
 ```go
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -203,7 +204,9 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 ```
 
 #### Handle event
-Create the function that handles event itself:
+
+Create a function to handle the webhook event:
+
 ```go
 func handleEvent(payload synaps.WebhookPayload) {
 	switch payload.Status {
@@ -233,17 +236,17 @@ func main() {
 
 > Ensure that your endpoint is reachable from the internet so webhook server can reach it
 
-Once its done you can add your endpoint URL to synaps [manager](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks) for guidance)  
+Once done, add your endpoint URL to Synaps [manager](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks) for guidance).
 
 Congratulations, you're now all set!
 
-Remember to keep it secure by:  
+Be sure not to overlook theses steps to ensure security:
 - Verifying that the secret in the query parameters is matching the one given to you on the manager. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/tree/refactor/exemple-and-error-handling#handle-webhook) below.
 - Utilizing HTTPS to establish a secure communication channel. This practice ensures the confidentiality and integrity of the data being exchanged.
 
 ## API Reference
 
-For more details on the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
+For more details about the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
 
 # Corporate (Coming soon)
 ...
