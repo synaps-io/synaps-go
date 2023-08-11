@@ -62,6 +62,7 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 // Getting liveness step details with FindSessionStep helper method
 func processLiveness(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	sessionID := details.Session.ID
+
 	livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
 	if err != nil {
 		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)

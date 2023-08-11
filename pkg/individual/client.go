@@ -11,6 +11,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const DefaultBaseURL = "https://api.synaps.io/v4/"
+
 type Client struct {
 	httpClient *http.Client
 	apiKey     string
@@ -29,7 +31,7 @@ func NewClient(apiKey string) *Client {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
-		baseURL:    "api.synaps.io",
+		baseURL:    DefaultBaseURL,
 	}
 }
 
@@ -43,7 +45,7 @@ func NewClientFromEnv() *Client {
 
 	baseURL, ok := os.LookupEnv("SYNAPS_BASE_URL")
 	if !ok {
-		baseURL = "api.synaps.io"
+		baseURL = DefaultBaseURL
 	}
 
 	return NewCustomClient(baseURL, apiKey)

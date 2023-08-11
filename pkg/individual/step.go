@@ -80,14 +80,14 @@ type (
 		} `json:"original_files"`
 	}
 	proofOfAddressData struct {
-		Country string            `json:"country"`
-		Type    string            `json:"type"` // Either IDDocumentType or ProofOfAddressDocumentType
-		Fields  map[string]string `json:"fields"`
+		Country string                     `json:"country"`
+		Type    ProofOfAddressDocumentType `json:"type"`
+		Fields  map[string]string          `json:"fields"`
 		Files   struct {
 			Accomodation File `json:"accomodation"`
 			Proof        File `json:"proof"`
 		} `json:"files"`
-		HostIDDocument File `json:"host_id_document"`
+		HostIDDocument idDocumentData `json:"host_id_document"`
 		OriginalFiles  struct {
 			Accomodation File `json:"accomodation"`
 			Proof        File `json:"proof"`
@@ -125,9 +125,9 @@ type StepMetadata struct {
 
 type PhoneStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     StepType   `json:"type"`
+	Type     StepType     `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   Status `json:"status"`
+	Status   Status       `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification phoneData `json:"verification"`
@@ -135,9 +135,9 @@ type PhoneStepDetailsResponse struct {
 
 type EmailStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     StepType   `json:"type"`
+	Type     StepType     `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   Status `json:"status"`
+	Status   Status       `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification emailData `json:"verification"`
@@ -145,9 +145,9 @@ type EmailStepDetailsResponse struct {
 
 type ProofOfAddressStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     StepType   `json:"type"`
+	Type     StepType     `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   Status `json:"status"`
+	Status   Status       `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Document proofOfAddressData `json:"document"`
@@ -155,9 +155,9 @@ type ProofOfAddressStepDetailsResponse struct {
 
 type IDStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     StepType   `json:"type"`
+	Type     StepType     `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   Status `json:"status"`
+	Status   Status       `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Document idDocumentData `json:"document"`
@@ -165,9 +165,9 @@ type IDStepDetailsResponse struct {
 
 type LivenessStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     StepType   `json:"type"`
+	Type     StepType     `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   Status `json:"status"`
+	Status   Status       `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification livenessData `json:"verification"`
