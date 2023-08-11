@@ -5,11 +5,10 @@ import (
 	"log"
 
 	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 func main() {
-	synapsClient := individual.NewClientFromEnv()
+	synapsClient := synaps.NewClientFromEnv()
 
 	alias := "john-doe"
 	initSessionRes, err := synapsClient.InitSession(&alias)
@@ -29,7 +28,7 @@ func main() {
 	// Getting liveness step details with FindSessionStep helper method
 
 	{
-		livenessStep, err := sessionDetails.FindSessionStep(models.LivenessStep)
+		livenessStep, err := sessionDetails.FindSessionStep(synaps.LivenessStep)
 		if err != nil {
 			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 		}
@@ -41,11 +40,11 @@ func main() {
 
 		fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
 
-		if livenessStep.Status == models.Approved {
+		if livenessStep.Status == synaps.StatusApproved {
 			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
 		}
 
-		if livenessStep.Status == models.Rejected {
+		if livenessStep.Status == synaps.StatusRejected {
 			fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
 		}
 	}
@@ -53,9 +52,9 @@ func main() {
 	// Getting id document step details without helper method
 
 	{
-		var IDDocumentStep *models.Step
+		var IDDocumentStep *synaps.Step
 		for _, step := range sessionDetails.Session.Steps {
-			if step.Type == models.IDDocumentStep {
+			if step.Type == synaps.IDDocumentStep {
 				IDDocumentStep = &step
 				break
 			}
@@ -72,7 +71,7 @@ func main() {
 
 		fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
 
-		if idDocumentStepDetails.Status == models.Pending || idDocumentStepDetails.Status == models.Approved {
+		if idDocumentStepDetails.Status == synaps.StatusPending || idDocumentStepDetails.Status == synaps.StatusApproved {
 			fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
 		}
 
@@ -83,15 +82,15 @@ func main() {
 	{
 		for _, step := range sessionDetails.Session.Steps {
 			switch step.Type {
-			case models.LivenessStep:
+			case synaps.LivenessStep:
 				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-			case models.IDDocumentStep:
+			case synaps.IDDocumentStep:
 				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-			case models.EmailStep:
+			case synaps.EmailStep:
 				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-			case models.PhoneStep:
+			case synaps.PhoneStep:
 				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-			case models.ProofOfAddressStep:
+			case synaps.ProofOfAddressStep:
 				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
 			}
 		}

@@ -1,4 +1,4 @@
-package models
+package synaps
 
 type Error struct {
 	Message string `json:"message"`

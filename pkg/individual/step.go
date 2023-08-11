@@ -1,4 +1,4 @@
-package models
+package synaps
 
 type SynapsStep string
 
@@ -13,18 +13,23 @@ const (
 type ReasonCode string
 
 const (
-	ForgedRejection              ReasonCode = "FORGED_REJECTION"
-	DocumentHidden               ReasonCode = "DOCUMENT_HIDDEN"
-	BadEnvironment               ReasonCode = "BAD_ENVIRONMENT"
-	BlackWhitePicture            ReasonCode = "BLACK_WHITE_PICTURE"
-	BadQuality                   ReasonCode = "BAD_QUALITY"
-	DocumentCompliance           ReasonCode = "DOCUMENT_COMPLIANCE"
-	IdentityDocumentExpired      ReasonCode = "IDENTITY_DOCUMENT_EXPIRED"
-	DocumentInvalidFrontSide     ReasonCode = "DOCUMENT_INVALID_FRONT_SIDE"
-	DocumentInvalidBackSide      ReasonCode = "DOCUMENT_INVALID_BACK_SIDE"
-	IdentityDocumentDobDateMinor ReasonCode = "IDENTITY_DOCUMENT_DOB_DATE_MINOR"
-	RestrictedNationalityType    ReasonCode = "RESTRICTED_NATIONALITY_TYPE"
+	ForgedRejectionReason              ReasonCode = "FORGED_REJECTION"
+	DocumentHiddenReason               ReasonCode = "DOCUMENT_HIDDEN"
+	BadEnvironmentReason               ReasonCode = "BAD_ENVIRONMENT"
+	BlackWhitePictureReason            ReasonCode = "BLACK_WHITE_PICTURE"
+	BadQualityReason                   ReasonCode = "BAD_QUALITY"
+	DocumentComplianceReason           ReasonCode = "DOCUMENT_COMPLIANCE"
+	IdentityDocumentExpiredReason      ReasonCode = "IDENTITY_DOCUMENT_EXPIRED"
+	DocumentInvalidFrontSideReason     ReasonCode = "DOCUMENT_INVALID_FRONT_SIDE"
+	DocumentInvalidBackSideReason      ReasonCode = "DOCUMENT_INVALID_BACK_SIDE"
+	IdentityDocumentDobDateMinorReason ReasonCode = "IDENTITY_DOCUMENT_DOB_DATE_MINOR"
+	RestrictedNationalityTypeReason    ReasonCode = "RESTRICTED_NATIONALITY_TYPE"
 )
+
+type StepReason struct {
+	Code    ReasonCode
+	Message string
+}
 
 type IDDocumentType string
 
@@ -52,11 +57,6 @@ const (
 	Sms  PhoneMethod = "sms"
 	Call PhoneMethod = "call"
 )
-
-type StepReason struct {
-	Code    ReasonCode
-	Message string
-}
 
 type File struct {
 	URL  string `json:"url"`
@@ -182,6 +182,5 @@ type LivenessStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Timeline     []any
 	Verification LivenessData `json:"verification"`
 }

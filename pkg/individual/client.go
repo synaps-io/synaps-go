@@ -1,4 +1,4 @@
-package individual
+package synaps
 
 import (
 	"encoding/json"
@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 type Client struct {

@@ -1,11 +1,9 @@
-package individual
+package synaps
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 func (c *Client) InitSession(alias *string) (sessionID InitSessionResponse, err error) {

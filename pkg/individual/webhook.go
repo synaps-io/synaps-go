@@ -1,4 +1,4 @@
-package models
+package synaps
 
 type WebhookPayload struct {
 	Reason    string      `json:"reason"`

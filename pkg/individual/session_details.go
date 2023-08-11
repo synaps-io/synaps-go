@@ -1,9 +1,7 @@
-package individual
+package synaps
 
 import (
 	"fmt"
-
-	. "github.com/synaps.io/synaps-sdk-go/pkg/individual/models"
 )
 
 func (c *Client) GetSessionDetails(sessionID string) (SessionDetailsResponse, error) {
