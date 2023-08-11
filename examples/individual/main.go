@@ -22,6 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
+
 	fmt.Printf("session status: %s\n", details.Session.Status)
 
 	processLiveness(client, details)
@@ -105,9 +106,9 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
 	}
 
-	fmt.Printf("ID Document step status: %s\n", IDStepDetails.Status)
+	fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+		fmt.Printf("ID[firstname]: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
 	}
 }
