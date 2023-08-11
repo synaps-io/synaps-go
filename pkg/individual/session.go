@@ -1,7 +1,5 @@
 package synaps
 
-import "errors"
-
 type InitSessionResponse struct {
 	SessionID string `json:"session_id"`
 	Sandbox   bool   `json:"sandbox"`
@@ -20,7 +18,7 @@ type SessionDetailsResponse struct {
 	Session struct {
 		ID      string       `json:"id"`
 		Alias   string       `json:"alias"`
-		Status  SynapsStatus `json:"status"`
+		Status  Status `json:"status"`
 		Sandbox bool         `json:"sandbox"`
 		Steps   []Step       `json:"steps"`
 	} `json:"session"`
@@ -28,15 +26,15 @@ type SessionDetailsResponse struct {
 
 type Step struct {
 	ID     string       `json:"id"`
-	Status SynapsStatus `json:"status"`
-	Type   SynapsStep   `json:"type"`
+	Status Status `json:"status"`
+	Type   StepType     `json:"type"`
 }
 
-func (details *SessionDetailsResponse) FindSessionStep(stepType SynapsStep) (*Step, error) {
-	for _, step := range details.Session.Steps {
+func (d *SessionDetailsResponse) FindSessionStep(stepType StepType) (*Step, error) {
+	for _, step := range d.Session.Steps {
 		if step.Type == stepType {
 			return &step, nil
 		}
 	}
-	return nil, errors.New("step not found")
+	return nil, ErrStepNotFound
 }

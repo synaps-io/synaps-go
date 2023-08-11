@@ -12,6 +12,7 @@ func (c *Client) InitSession(alias *string) (sessionID InitSessionResponse, err 
 		req.Alias = *alias
 	}
 
+
 	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
 	body, err := json.Marshal(req)
 	if err != nil {
