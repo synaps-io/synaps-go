@@ -42,7 +42,7 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 		case synaps.LivenessStep:
 			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
 		case synaps.IDDocumentStep:
-			response, err = client.GetStepIDDocumentDetails(sessionID, step.ID)
+			response, err = client.GetStepIDDetails(sessionID, step.ID)
 		case synaps.EmailStep:
 			response, err = client.GetStepEmailDetails(sessionID, step.ID)
 		case synaps.PhoneStep:
@@ -99,7 +99,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 		log.Fatalf("failed to get step for session[%s]", sessionID)
 	}
 
-	IDStepDetails, err := client.GetStepIDDocumentDetails(sessionID, IDStep.ID)
+	IDStepDetails, err := client.GetStepIDDetails(sessionID, IDStep.ID)
 	if err != nil {
 		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
 	}

@@ -22,7 +22,7 @@ func (c *Client) GetStepPhoneDetails(sessionID string, stepID string) (PhoneStep
 	return *res, nil
 }
 
-func (c *Client) GetStepIDDocumentDetails(sessionID string, stepID string) (IDStepDetailsResponse, error) {
+func (c *Client) GetStepIDDetails(sessionID string, stepID string) (IDStepDetailsResponse, error) {
 	res, err := makeRequest[IDStepDetailsResponse](c.httpClient, "GET", c.baseURL+"individual/session/"+sessionID+"/step/"+stepID, nil, map[string]string{"Api-Key": c.apiKey})
 	if err != nil {
 		return IDStepDetailsResponse{}, fmt.Errorf("get id document step details request failed: %s", err)
