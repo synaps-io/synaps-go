@@ -1,9 +1,9 @@
 # Synaps Go SDK
 
-# Individual 
+# Individual
 
-The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.  
-Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).  
+The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.
+Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).
 
 > For more details, please refer to the Synaps API documentation at [https://docs.synaps.io](https://docs.synaps.io).
 
@@ -25,7 +25,7 @@ Before you start using this SDK, ensure that you have the following:
 
 ## Usage
 
-The SDK facilitates the initiation of sessions, tracking user KYC progress, retrieving verification results, and handling events through webhooks.  
+The SDK facilitates the initiation of sessions, tracking user KYC progress, retrieving verification results, and handling events through webhooks.
 This section provides an overview of the fundamental steps to integrate the SDK into your project and start leveraging its functionalities.
 
 > A complete example can be found in the [examples/individual/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/main.go) file within the repository.
@@ -40,7 +40,7 @@ import (
 
 #### Configuring client
 
-Set the `SYNAPS_API_KEY` env variable to your api key and create a new Synaps client from environment: 
+Set the `SYNAPS_API_KEY` env variable to your api key and create a new Synaps client from environment:
 
 ```go
 synapsClient := synaps.NewClientFromEnv()
@@ -84,7 +84,7 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 ```
 
 
-#### Get step details 
+#### Get step details
 (Refer to the [documentation](https://docs.synaps.io/steps#get-step-details) for details about the step details response)
 
 Get liveness step details using the `FindSessionStep` helper method:
