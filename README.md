@@ -34,7 +34,7 @@ This section provides an overview of the fundamental steps to integrate the SDK 
 
 ```go
 import (
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	synaps "github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 ```
 
@@ -49,7 +49,7 @@ synapsClient := synaps.NewClientFromEnv()
 
 Or create it from variables:
 ```go
-synapsClient := synaps.NewClient("API_KEY")
+synapsClient := synaps.NewClient("$YOUR_API_KEY")
 ```
 
 #### Initialize session
@@ -57,9 +57,9 @@ synapsClient := synaps.NewClient("API_KEY")
 Initialize a new session:
 
 ```go
-initSessionRes, err := synapsClient.InitSession(nil)
+initSessionRes, err := client.InitSession(nil)
 if err != nil {
-    log.Fatalf("failed to init session: %s", err)
+	log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
 ```
@@ -68,7 +68,11 @@ Initialize a new session with an `alias`:
 
 ```go
 alias := "john-doe"
-initSessionRes, err := synapsClient.InitSession(&alias)
+initSessionRes, err := client.InitSession(&alias)
+if err != nil {
+	log.Fatalf("failed to init session: %s", err)
+}
+sessionID := initSessionRes.SessionID
 ```
 
 #### Get session details
@@ -76,11 +80,12 @@ initSessionRes, err := synapsClient.InitSession(&alias)
 (Refer to the [documentation](https://docs.synaps.io/session#get-session-details) for details about the session details response)
 
 ```go
-sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
+details, err := client.GetSessionDetails(sessionID)
 if err != nil {
 	log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 }
-fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
+
+fmt.Printf("session status: %s\n", details.Session.Status)
 ```
 
 
@@ -89,68 +94,81 @@ fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
 
 Get liveness step details using the `FindSessionStep` helper method:
 ```go
-livenessStep, err := sessionDetails.FindSessionStep(synaps.LivenessStep)
+livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
 if err != nil {
 	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 }
 
-livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
+livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
 if err != nil {
 	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 }
 
 fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
 
-if livenessStep.Status == synaps.StatusApproved {
+switch livenessStep.Status {
+case synaps.StatusApproved:
 	fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-}
-
-if livenessStep.Status == synaps.StatusRejected {
+case synaps.StatusRejected:
 	fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+default:
+	fmt.Printf("Liveness step is not finished yet\n")
 }
 ```
 
-Get ID document step details without helper method:
+Get ID step details without helper method:
 ```go
-var IDDocumentStep *synaps.Step
-for _, step := range sessionDetails.Session.Steps {
+var IDStep *synaps.Step
+for _, step := range details.Session.Steps {
 	if step.Type == synaps.IDDocumentStep {
-		IDDocumentStep = &step
+		IDStep = &step
 		break
 	}
 }
 
-if IDDocumentStep == nil {
-	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+sessionID := details.Session.ID
+if IDStep == nil {
+	log.Fatalf("failed to get step for session[%s]", sessionID)
 }
 
-idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
+IDStepDetails, err := client.GetStepIDDetails(sessionID, IDStep.ID)
 if err != nil {
-	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
+	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
 }
 
-fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
+fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
-if idDocumentStepDetails.Status == synaps.StatusPending || idDocumentStepDetails.Status == synaps.StatusApproved {
-	fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
+if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
+	fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
 }
 ```
 
 Iterating through steps:
 ```go
-for _, step := range sessionDetails.Session.Steps {
+...
+var response any
+var err error
+
+for _, step := range details.Session.Steps {
 	switch step.Type {
-	case synaps.Liveness:
-		_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-	case synaps.IDDocument:
-		_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-	case synaps.Email:
-		_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-	case synaps.Phone:
-		_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-	case synaps.ProofOfAddress:
-		_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
+	case synaps.LivenessStep:
+		response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+	case synaps.IDDocumentStep:
+		response, err = client.GetStepIDDetails(sessionID, step.ID)
+	case synaps.EmailStep:
+		response, err = client.GetStepEmailDetails(sessionID, step.ID)
+	case synaps.PhoneStep:
+		response, err = client.GetStepPhoneDetails(sessionID, step.ID)
+	case synaps.ProofOfAddressStep:
+		response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
 	}
+
+	if err != nil {
+		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+		continue
+	}
+	
+    // Do your stuff...
 }
 ```
 
@@ -169,7 +187,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	synaps "github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 ```
 
