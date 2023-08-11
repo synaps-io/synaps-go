@@ -237,7 +237,7 @@ Once its done you can add your endpoint URL to synaps [manager](https://manager-
 Congratulations, you're now all set!
 
 Remember to keep it secure by:  
-- Verifying the presence of a secret in the query parameters. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/blob/main/README.md?plain=1#L192) below.
+- Verifying that the secret in the query parameters is matching the one given to you on the manager. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/tree/refactor/exemple-and-error-handling#handle-webhook) below.
 - Utilizing HTTPS to establish a secure communication channel. This practice ensures the confidentiality and integrity of the data being exchanged.
 
 ## API Reference
