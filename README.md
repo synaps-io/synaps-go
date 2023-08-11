@@ -21,7 +21,7 @@ Before you start using the Synaps Go SDK, ensure that you have the following:
 
 - **Go Programming Language**: requires Go 1.19 or higher.
 
-- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. Theses can be found on the [manager app](https://manager-kyc.synaps.io) in the developer section of your app.
+- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. You can find it on the [manager](https://manager-kyc.synaps.io) in the developer section of your app.
 
 ## Usage
 
@@ -159,7 +159,7 @@ In order to receive webhooks, you'll need to create an endpoint that can receive
 
 > You can check the full example in the [exemples/individual/webhook/main.go](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/webhook/main.go) file within the repository.
 
-First, import packages:
+#### Import
 ```go
 import (
 	"encoding/json"
@@ -172,7 +172,8 @@ import (
 )
 ```
 
-Then create your handler function for processing incoming webhooks:
+#### Handle webhook
+Create your handler function for processing incoming request:
 ```go
 func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -180,7 +181,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    // Unmarshaling body
+        // Unmarshaling body
 	var payload synaps.WebhookPayload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, "Error unmarshaling request body", http.StatusInternalServerError)
@@ -188,7 +189,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-    // Checking for secret
+        // Checking for secret
 	if r.URL.Query().Get("secret") != os.Getenv("secret") {
 		log.Printf("Error wrong webhook secret")
 		http.Error(w, "Error invalid secret", http.StatusUnauthorized)
@@ -201,6 +202,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+#### Handle event
 Create the function that handles event itself:
 ```go
 func handleEvent(payload synaps.WebhookPayload) {
@@ -227,15 +229,16 @@ func main() {
 	http.ListenAndServe(":80", nil)
 }
 ```
-> Ensure that your endpoint is reachable for the internet so webhook server can reach it
 
-Once its done you can add your endpoint URL to synaps [manager app](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks))  
+> Ensure that your endpoint is reachable from the internet so webhook server can reach it
 
-And you're done !
+Once its done you can add your endpoint URL to synaps [manager](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks) for guidance)  
 
-Remember to keep it secure by:
-- Checking for secret in the query so you can make sure you're receiving event from synaps (like in the [exemple](https://github.com/synaps-hub/synaps-sdk-go/blob/main/README.md?plain=1#L192) below) 
-- Using https to enable secured communication
+Congratulations, you're now all set!
+
+Remember to keep it secure by:  
+- Verifying the presence of a secret in the query parameters. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/blob/main/README.md?plain=1#L192) below.
+- Utilizing HTTPS to establish a secure communication channel. This practice ensures the confidentiality and integrity of the data being exchanged.
 
 ## API Reference
 
@@ -247,4 +250,3 @@ For more details on the API, please refer to the [Synaps API Reference](https://
 # License
 
 This SDK is released under the [MIT License](LICENSE). Feel free to review the terms of the license in the provided [LICENSE](LICENSE) file.
-
