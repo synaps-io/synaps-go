@@ -216,7 +216,8 @@ func handleEvent(payload synaps.WebhookPayload) {
 }
 ```
 
-Serve your endpoint:
+#### Serve endpoint
+
 ```go
 func main() {
 	_, ok := os.LookupEnv("SYNAPS_WEBHOOK_SECRET")
