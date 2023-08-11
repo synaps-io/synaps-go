@@ -1,13 +1,13 @@
 package synaps
 
-type SynapsStep string
+type StepType string
 
 const (
-	LivenessStep       SynapsStep = "LIVENESS"
-	IDDocumentStep     SynapsStep = "ID_DOCUMENT"
-	ProofOfAddressStep SynapsStep = "PROOF_OF_ADDRESS"
-	EmailStep          SynapsStep = "EMAIL"
-	PhoneStep          SynapsStep = "PHONE"
+	LivenessStep       StepType = "LIVENESS"
+	IDDocumentStep     StepType = "ID_DOCUMENT"
+	ProofOfAddressStep StepType = "PROOF_OF_ADDRESS"
+	EmailStep          StepType = "EMAIL"
+	PhoneStep          StepType = "PHONE"
 )
 
 type ReasonCode string
@@ -125,9 +125,9 @@ type StepMetadata struct {
 
 type PhoneStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     SynapsStep   `json:"type"`
+	Type     StepType   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   SynapsStatus `json:"status"`
+	Status   Status `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification phoneData `json:"verification"`
@@ -135,9 +135,9 @@ type PhoneStepDetailsResponse struct {
 
 type EmailStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     SynapsStep   `json:"type"`
+	Type     StepType   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   SynapsStatus `json:"status"`
+	Status   Status `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification emailData `json:"verification"`
@@ -145,19 +145,19 @@ type EmailStepDetailsResponse struct {
 
 type ProofOfAddressStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     SynapsStep   `json:"type"`
+	Type     StepType   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   SynapsStatus `json:"status"`
+	Status   Status `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Document proofOfAddressData `json:"document"`
 }
 
-type IDDocumentStepDetailsResponse struct {
+type IDStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     SynapsStep   `json:"type"`
+	Type     StepType   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   SynapsStatus `json:"status"`
+	Status   Status `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Document idDocumentData `json:"document"`
@@ -165,9 +165,9 @@ type IDDocumentStepDetailsResponse struct {
 
 type LivenessStepDetailsResponse struct {
 	ID       string       `json:"id"`
-	Type     SynapsStep   `json:"type"`
+	Type     StepType   `json:"type"`
 	Metadata StepMetadata `json:"metadata"`
-	Status   SynapsStatus `json:"status"`
+	Status   Status `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
 	Verification livenessData `json:"verification"`

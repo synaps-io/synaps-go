@@ -8,91 +8,105 @@ import (
 )
 
 func main() {
-	synapsClient := synaps.NewClientFromEnv()
+	client := synaps.NewClientFromEnv()
 
 	alias := "john-doe"
-	initSessionRes, err := synapsClient.InitSession(&alias)
+	initSessionRes, err := client.InitSession(&alias)
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
 	sessionID := initSessionRes.SessionID
 
 	// Getting session details
-
-	sessionDetails, err := synapsClient.GetSessionDetails(sessionID)
+	details, err := client.GetSessionDetails(sessionID)
 	if err != nil {
 		log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 	}
-	fmt.Printf("session status: %s\n", sessionDetails.Session.Status)
+	fmt.Printf("session status: %s\n", details.Session.Status)
 
-	// Getting liveness step details with FindSessionStep helper method
+	processLiveness(client, details)
 
-	{
-		livenessStep, err := sessionDetails.FindSessionStep(synaps.LivenessStep)
+	processID(client, details)
+
+	processSteps(client, details)
+}
+
+// Iterating over steps
+func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) {
+	sessionID := details.Session.ID
+
+	var response any
+	var err error
+	for _, step := range details.Session.Steps {
+		switch step.Type {
+		case synaps.LivenessStep:
+			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+		case synaps.IDDocumentStep:
+			response, err = client.GetStepIDDocumentDetails(sessionID, step.ID)
+		case synaps.EmailStep:
+			response, err = client.GetStepEmailDetails(sessionID, step.ID)
+		case synaps.PhoneStep:
+			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
+		case synaps.ProofOfAddressStep:
+			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		}
+
 		if err != nil {
-			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+			continue
 		}
+		fmt.Printf("Response is:\n%+v\n", response)
+	}
+}
 
-		livenessStepDetails, err := synapsClient.GetStepLivenessDetails(sessionID, livenessStep.ID)
-		if err != nil {
-			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-		}
+// Getting liveness step details with FindSessionStep helper method
+func processLiveness(client *synaps.Client, details synaps.SessionDetailsResponse) {
+	sessionID := details.Session.ID
+	livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
+	if err != nil {
+		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
+	}
 
-		fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
+	livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
+	if err != nil {
+		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
+	}
 
-		if livenessStep.Status == synaps.StatusApproved {
-			fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-		}
+	fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
 
-		if livenessStep.Status == synaps.StatusRejected {
-			fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+	switch livenessStep.Status {
+	case synaps.StatusApproved:
+		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+	case synaps.StatusRejected:
+		fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+	default:
+		fmt.Printf("Liveness step is not finished yet\n")
+	}
+}
+
+// Getting id document step details without helper method
+func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
+	var IDStep *synaps.Step
+	for _, step := range details.Session.Steps {
+		if step.Type == synaps.IDDocumentStep {
+			IDStep = &step
+			break
 		}
 	}
 
-	// Getting id document step details without helper method
-
-	{
-		var IDDocumentStep *synaps.Step
-		for _, step := range sessionDetails.Session.Steps {
-			if step.Type == synaps.IDDocumentStep {
-				IDDocumentStep = &step
-				break
-			}
-		}
-
-		if IDDocumentStep == nil {
-			log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-		}
-
-		idDocumentStepDetails, err := synapsClient.GetStepIDDocumentDetails(sessionID, IDDocumentStep.ID)
-		if err != nil {
-			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDDocumentStep.Type, sessionID, err)
-		}
-
-		fmt.Printf("ID Document step status: %s\n", idDocumentStepDetails.Status)
-
-		if idDocumentStepDetails.Status == synaps.StatusPending || idDocumentStepDetails.Status == synaps.StatusApproved {
-			fmt.Printf("ID Document firstname: %s\n", idDocumentStepDetails.Document.Fields.Firstname)
-		}
-
+	sessionID := details.Session.ID
+	if IDStep == nil {
+		log.Fatalf("failed to get step for session[%s]", sessionID)
 	}
 
-	// Iterating over steps
+	IDStepDetails, err := client.GetStepIDDocumentDetails(sessionID, IDStep.ID)
+	if err != nil {
+		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
+	}
 
-	{
-		for _, step := range sessionDetails.Session.Steps {
-			switch step.Type {
-			case synaps.LivenessStep:
-				_, _ = synapsClient.GetStepLivenessDetails(sessionID, step.ID)
-			case synaps.IDDocumentStep:
-				_, _ = synapsClient.GetStepIDDocumentDetails(sessionID, step.ID)
-			case synaps.EmailStep:
-				_, _ = synapsClient.GetStepEmailDetails(sessionID, step.ID)
-			case synaps.PhoneStep:
-				_, _ = synapsClient.GetStepPhoneDetails(sessionID, step.ID)
-			case synaps.ProofOfAddressStep:
-				_, _ = synapsClient.GetStepProofOfAddressDetails(sessionID, step.ID)
-			}
-		}
+	fmt.Printf("ID Document step status: %s\n", IDStepDetails.Status)
+
+	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
+		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
 	}
 }
