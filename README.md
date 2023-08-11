@@ -156,6 +156,85 @@ for _, step := range sessionDetails.Session.Steps {
 }
 ```
 
+### Webhooks
+
+iIn order to receive webhooks, you'll need to create an endpoint that can receive and handle the webhook events. Below is an example of how to set up the necessary components.
+
+First, create your handler function for processing incoming webhooks:
+```go
+import (
+
+)
+
+func handleWebhook(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var payload synaps.WebhookPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		http.Error(w, "Error unmarshaling request body", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	if r.URL.Query().Get("secret") != os.Getenv("secret") {
+		log.Printf("Error wrong webhook secret")
+		http.Error(w, "Error invalid secret", http.StatusUnauthorized)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+```
+
+Then create the function that handles event itself:
+```go
+func handleEvent(payload synaps.WebhookPayload) {
+	switch payload.Status {
+	case synaps.EventApproved:
+		log.Printf("Received event: APPROVED")
+	case synaps.EventRejected:
+		log.Printf("Received event: REJECTED")
+    // ...
+	}
+}
+```
+
+Add it to you http handler function:
+```go
+// Previous code...
+
+if r.URL.Query().Get("secret") != os.Getenv("SYNAPS_WEBHOOK_SECRET") {
+	log.Printf("Error wrong webhook secret")
+	http.Error(w, "Error invalid secret", http.StatusUnauthorized)
+	return
+}
+
+handleEvent(payload)
+
+w.WriteHeader(http.StatusOK)
+```
+
+Then serve your endpoint and check for secret:
+```go
+func main() {
+	_, ok := os.LookupEnv("SYNAPS_WEBHOOK_SECRET")
+	if !ok {
+		log.Fatalf("Error missing webhook secret")
+	}
+
+	http.HandleFunc("/webhook", handleWebhook)
+	fmt.Println("Webhook server listening on port 8080...")
+	http.ListenAndServe(":8080", nil)
+}
+```
+> Deploy your endpoint to the internet so webhook server can reach it
+
+Once your endpoint is available on the internet you can add your endpoint to synaps [manager app](https://manager-kyc.synaps.io) (see [documentation](https://docs.synaps.io/quickstart#6-configure-webhooks)) and export `SYNAPS_WEBHOOK_SECRET` so you can make sure you receiving event from synaps
+
+
 ## API Reference
 
 For more details on the API, please refer to the [Synaps API Reference](https://docs.synaps.io/session).
