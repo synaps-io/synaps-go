@@ -65,18 +65,11 @@ type File struct {
 }
 
 type (
-	IdDocumentData struct {
-		Country string         `json:"country"`
-		Type    IDDocumentType `json:"type"`
-		Fields  struct {
-			Firstname          string `json:"firstname"`
-			Lastname           string `json:"lastname"`
-			BirthDate          string `json:"birth_date"`
-			DocumentExpiration string `json:"document_expiration"`
-			DocumentNumber     string `json:"document_number"`
-			Nationality        string `json:"nationality"`
-		} `json:"fields"`
-		Files struct {
+	idDocumentData struct {
+		Country string            `json:"country"`
+		Type    IDDocumentType    `json:"type"`
+		Fields  map[string]string `json:"fields"`
+		Files   struct {
 			Front File `json:"front"`
 			Back  File `json:"back"`
 			Face  File `json:"face"`
@@ -86,16 +79,11 @@ type (
 			Back  File `json:"back"`
 		} `json:"original_files"`
 	}
-	ProofOfAddressData struct {
-		Country string `json:"country"`
-		Type    string `json:"type"` // Either IDDocumentType or ProofOfAddressDocumentType
-		Fields  struct {
-			Address     string `json:"address"`
-			City        string `json:"city"`
-			IssuingDate string `json:"issuing_date"`
-			Zipcode     string `json:"zipcode"`
-		} `json:"fields"`
-		Files struct {
+	proofOfAddressData struct {
+		Country string            `json:"country"`
+		Type    string            `json:"type"` // Either IDDocumentType or ProofOfAddressDocumentType
+		Fields  map[string]string `json:"fields"`
+		Files   struct {
 			Accomodation File `json:"accomodation"`
 			Proof        File `json:"proof"`
 		} `json:"files"`
@@ -105,7 +93,7 @@ type (
 			Proof        File `json:"proof"`
 		} `json:"original_files"`
 	}
-	PhoneData struct {
+	phoneData struct {
 		Phone struct {
 			CallingCode string      `json:"calling_code"`
 			Country     string      `json:"country"`
@@ -113,12 +101,12 @@ type (
 			Number      string      `json:"number"`
 		} `json:"phone"`
 	}
-	EmailData struct {
+	emailData struct {
 		Email struct {
 			Value string `json:"value"`
 		} `json:"email"`
 	}
-	LivenessData struct {
+	livenessData struct {
 		Liveness struct {
 			File File `json:"file"`
 		} `json:"liveness"`
@@ -142,7 +130,7 @@ type PhoneStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Verification PhoneData `json:"verification"`
+	Verification phoneData `json:"verification"`
 }
 
 type EmailStepDetailsResponse struct {
@@ -152,7 +140,7 @@ type EmailStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Verification EmailData `json:"verification"`
+	Verification emailData `json:"verification"`
 }
 
 type ProofOfAddressStepDetailsResponse struct {
@@ -162,7 +150,7 @@ type ProofOfAddressStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Document ProofOfAddressData `json:"document"`
+	Document proofOfAddressData `json:"document"`
 }
 
 type IDDocumentStepDetailsResponse struct {
@@ -172,7 +160,7 @@ type IDDocumentStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Document IdDocumentData `json:"document"`
+	Document idDocumentData `json:"document"`
 }
 
 type LivenessStepDetailsResponse struct {
@@ -182,5 +170,5 @@ type LivenessStepDetailsResponse struct {
 	Status   SynapsStatus `json:"status"`
 	Reason   StepReason   `json:"reason"`
 
-	Verification LivenessData `json:"verification"`
+	Verification livenessData `json:"verification"`
 }

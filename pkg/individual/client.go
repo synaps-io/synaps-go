@@ -27,11 +27,19 @@ type IndividualClient interface {
 	GetStepProofOfAddressDetails(sessionID string, stepID string) (ProofOfAddressStepDetailsResponse, error)
 }
 
-func NewClient(baseURL string, apiKey string) IndividualClient {
+func NewCustomClient(baseURL string, apiKey string) IndividualClient {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
 		baseURL:    baseURL,
+	}
+}
+
+func NewClient(apiKey string) IndividualClient {
+	return &Client{
+		httpClient: http.DefaultClient,
+		apiKey:     apiKey,
+		baseURL:    "api.synaps.io",
 	}
 }
 
@@ -48,7 +56,7 @@ func NewClientFromEnv() IndividualClient {
 		baseURL = "api.synaps.io"
 	}
 
-	return NewClient(baseURL, apiKey)
+	return NewCustomClient(baseURL, apiKey)
 }
 
 func makeRequest[T any](httpClient *http.Client, method string, path string, body io.Reader, headers map[string]string) (*T, error) {
