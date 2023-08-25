@@ -57,7 +57,7 @@ synapsClient := synaps.NewClient("$YOUR_API_KEY")
 Initialize a new session:
 
 ```go
-initSessionRes, err := client.InitSession(nil)
+initSessionRes, err := client.InitSession("")
 if err != nil {
 	log.Fatalf("failed to init session: %s", err)
 }
@@ -68,7 +68,7 @@ Initialize a new session with an `alias`:
 
 ```go
 alias := "john-doe"
-initSessionRes, err := client.InitSession(&alias)
+initSessionRes, err := client.InitSession(alias)
 if err != nil {
 	log.Fatalf("failed to init session: %s", err)
 }
