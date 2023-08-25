@@ -11,7 +11,7 @@ func main() {
 	synapsClient := synaps.NewClientFromEnv()
 
 	alias := "john-doe"
-	initSessionRes, err := synapsClient.InitSession(&alias)
+	initSessionRes, err := synapsClient.InitSession(alias)
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}

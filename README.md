@@ -19,9 +19,9 @@ go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
 
 Before you start using this SDK, ensure that you have the following:
 
-- **Go Programming Language**: requires Go 1.19 or higher.
+- **Go Programming Language**: version 1.19 or higher.
 
-- **Synaps API Key**: To use the SDK, you need to have your Synaps API key. You can find it on the [manager](https://manager-kyc.synaps.io) in the developer section of your app.
+- **Synaps API Key**: Your Synaps API key. You can find it on the [manager](https://manager-kyc.synaps.io) within the developer section of your app.
 
 ## Usage
 
@@ -40,7 +40,7 @@ import (
 
 #### Configuring client
 
-Set the `SYNAPS_API_KEY` env variable to your api key and create a new Synaps client from environment: 
+Set the `SYNAPS_API_KEY` env variable to your api key value and create a new Synaps client from environment: 
 
 ```go
 synapsClient := synaps.NewClientFromEnv()

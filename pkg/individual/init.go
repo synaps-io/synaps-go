@@ -6,10 +6,10 @@ import (
 	"fmt"
 )
 
-func (c *Client) InitSession(alias *string) (sessionID InitSessionResponse, err error) {
+func (c *Client) InitSession(alias string) (sessionID InitSessionResponse, err error) {
 	req := InitSessionRequest{}
-	if alias != nil {
-		req.Alias = *alias
+	if alias != "" {
+		req.Alias = alias
 	}
 
 	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
