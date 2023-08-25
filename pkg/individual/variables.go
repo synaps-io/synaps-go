@@ -1,11 +1,11 @@
 package synaps
 
-type SynapsStatus string
+type Status string
 
 const (
-	StatusRejected             SynapsStatus = "REJECTED"
-	StatusSubmissionRequired   SynapsStatus = "SUBMISSION_REQUIRED"
-	StatusResubmissionRequired SynapsStatus = "RESUBMISSION_REQUIRED"
-	StatusPending              SynapsStatus = "PENDING_VERIFICATION"
-	StatusApproved             SynapsStatus = "APPROVED"
+	StatusRejected             Status = "REJECTED"
+	StatusSubmissionRequired   Status = "SUBMISSION_REQUIRED"
+	StatusResubmissionRequired Status = "RESUBMISSION_REQUIRED"
+	StatusPending              Status = "PENDING_VERIFICATION"
+	StatusApproved             Status = "APPROVED"
 )

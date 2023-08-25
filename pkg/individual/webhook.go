@@ -2,19 +2,19 @@ package synaps
 
 type WebhookPayload struct {
 	Reason    string      `json:"reason"`
-	Service   SynapsStep  `json:"service"`
+	Service   StepType  `json:"service"`
 	SessionID string      `json:"session_id"`
-	Status    SynapsEvent `json:"status"`
+	Status    WebhookEvent `json:"status"`
 	StepID    string      `json:"step_id"`
 }
 
-type SynapsEvent string
+type WebhookEvent string
 
 const (
-	EventRejected             SynapsEvent = "REJECTED"
-	EventSubmissionRequired   SynapsEvent = "SUBMISSION_REQUIRED"
-	EventResubmissionRequired SynapsEvent = "RESUBMISSION_REQUIRED"
-	EventPending              SynapsEvent = "PENDING_VERIFICATION"
-	EventApproved             SynapsEvent = "APPROVED"
-	EventReset                SynapsEvent = "RESET"
+	EventRejected             WebhookEvent = "REJECTED"
+	EventSubmissionRequired   WebhookEvent = "SUBMISSION_REQUIRED"
+	EventResubmissionRequired WebhookEvent = "RESUBMISSION_REQUIRED"
+	EventPending              WebhookEvent = "PENDING_VERIFICATION"
+	EventApproved             WebhookEvent = "APPROVED"
+	EventReset                WebhookEvent = "RESET"
 )

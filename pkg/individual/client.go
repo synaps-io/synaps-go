@@ -11,23 +11,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const DefaultBaseURL = "https://api.synaps.io/v4/"
+
 type Client struct {
 	httpClient *http.Client
 	apiKey     string
 	baseURL    string
 }
 
-type IndividualClient interface {
-	InitSession(alias string) (InitSessionResponse, error)
-	GetSessionDetails(sessionID string) (SessionDetailsResponse, error)
-	GetStepLivenessDetails(sessionID string, stepID string) (LivenessStepDetailsResponse, error)
-	GetStepPhoneDetails(sessionID string, stepID string) (PhoneStepDetailsResponse, error)
-	GetStepIDDocumentDetails(sessionID string, stepID string) (IDDocumentStepDetailsResponse, error)
-	GetStepEmailDetails(sessionID string, stepID string) (EmailStepDetailsResponse, error)
-	GetStepProofOfAddressDetails(sessionID string, stepID string) (ProofOfAddressStepDetailsResponse, error)
-}
-
-func NewCustomClient(baseURL string, apiKey string) IndividualClient {
+func NewCustomClient(baseURL string, apiKey string) *Client {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
@@ -35,15 +27,15 @@ func NewCustomClient(baseURL string, apiKey string) IndividualClient {
 	}
 }
 
-func NewClient(apiKey string) IndividualClient {
+func NewClient(apiKey string) *Client {
 	return &Client{
 		httpClient: http.DefaultClient,
 		apiKey:     apiKey,
-		baseURL:    "api.synaps.io",
+		baseURL:    DefaultBaseURL,
 	}
 }
 
-func NewClientFromEnv() IndividualClient {
+func NewClientFromEnv() *Client {
 	godotenv.Load()
 
 	apiKey, ok := os.LookupEnv("SYNAPS_API_KEY")
@@ -53,7 +45,7 @@ func NewClientFromEnv() IndividualClient {
 
 	baseURL, ok := os.LookupEnv("SYNAPS_BASE_URL")
 	if !ok {
-		baseURL = "api.synaps.io"
+		baseURL = DefaultBaseURL
 	}
 
 	return NewCustomClient(baseURL, apiKey)
@@ -74,7 +66,7 @@ func makeRequest[T any](httpClient *http.Client, method string, path string, bod
 		return nil, fmt.Errorf("failed to make init session request: %w", err)
 	}
 
-	if !(res.StatusCode >= 200 && res.StatusCode < 300) {
+	if (res.StatusCode < 200 || res.StatusCode >= 300) {
 		var error Error
 		if err := json.NewDecoder(res.Body).Decode(&error); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal error output: %w", err)
