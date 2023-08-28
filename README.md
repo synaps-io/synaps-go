@@ -153,6 +153,7 @@ for _, step := range details.Session.Steps {
 	switch step.Type {
 	case synaps.LivenessStep:
 		response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+        // Do your stuff...
 	case synaps.IDDocumentStep:
 		response, err = client.GetStepIDDetails(sessionID, step.ID)
 	case synaps.EmailStep:
@@ -187,7 +188,7 @@ import (
 	"net/http"
 	"os"
 
-	synaps "github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 ```
 
@@ -209,7 +210,7 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
         // Checking for secret
-	if r.URL.Query().Get("secret") != os.Getenv("secret") {
+	if r.URL.Query().Get("secret") != os.Getenv("SYNAPS_WEBHOOK_SECRET") {
 		log.Printf("Error wrong webhook secret")
 		http.Error(w, "Error invalid secret", http.StatusUnauthorized)
 		return
@@ -259,7 +260,7 @@ Once done, add your endpoint URL to Synaps [manager](https://manager-kyc.synaps.
 Congratulations, you're now all set!
 
 Be sure not to overlook theses steps to ensure security:
-- Verifying that the secret in the query parameters is matching the one given to you on the manager. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/tree/refactor/exemple-and-error-handling#handle-webhook) below.
+- Verifying that the secret in the query parameters is matching the one given to you on the manager. This step ensures that you are exclusively receiving events from Synaps, as shown in the [example](https://github.com/synaps-hub/synaps-sdk-go/blob/main/examples/individual/webhook/main.go#L37) below.
 - Utilizing HTTPS to establish a secure communication channel. This practice ensures the confidentiality and integrity of the data being exchanged.
 
 ## API Reference
