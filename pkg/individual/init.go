@@ -12,14 +12,13 @@ func (c *Client) InitSession(alias string) (sessionID InitSessionResponse, err e
 		req.Alias = alias
 	}
 
-
 	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
 	body, err := json.Marshal(req)
 	if err != nil {
 		return InitSessionResponse{}, fmt.Errorf("failed to marshal input: %s", err)
 	}
 
-	res, err := makeRequest[InitSessionResponse](c.httpClient, "POST", c.baseURL+"session/init", bytes.NewReader(body), headers)
+	res, err := makeRequest[InitSessionResponse](c.httpClient, "POST", c.baseURL+"/session/init", bytes.NewReader(body), headers)
 	if err != nil {
 		return InitSessionResponse{}, fmt.Errorf("init session request failed: %s", err)
 	}
