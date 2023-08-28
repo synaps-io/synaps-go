@@ -11,7 +11,7 @@ func main() {
 	client := synaps.NewClientFromEnv()
 
 	alias := "john-doe"
-	initSessionRes, err := client.InitSession(&alias)
+	initSessionRes, err := client.InitSession(alias)
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
@@ -30,34 +30,6 @@ func main() {
 	processID(client, details)
 
 	processSteps(client, details)
-}
-
-// Iterating over steps
-func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) {
-	sessionID := details.Session.ID
-
-	var response any
-	var err error
-	for _, step := range details.Session.Steps {
-		switch step.Type {
-		case synaps.LivenessStep:
-			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
-		case synaps.IDDocumentStep:
-			response, err = client.GetStepIDDetails(sessionID, step.ID)
-		case synaps.EmailStep:
-			response, err = client.GetStepEmailDetails(sessionID, step.ID)
-		case synaps.PhoneStep:
-			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
-		case synaps.ProofOfAddressStep:
-			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
-		}
-
-		if err != nil {
-			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
-			continue
-		}
-		fmt.Printf("Response is:\n%+v\n", response)
-	}
 }
 
 // Getting liveness step details with FindSessionStep helper method
@@ -110,5 +82,33 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 
 	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
 		fmt.Printf("ID[firstname]: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+	}
+}
+
+// Iterating over steps
+func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) {
+	sessionID := details.Session.ID
+
+	var response any
+	var err error
+	for _, step := range details.Session.Steps {
+		switch step.Type {
+		case synaps.LivenessStep:
+			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+		case synaps.IDDocumentStep:
+			response, err = client.GetStepIDDetails(sessionID, step.ID)
+		case synaps.EmailStep:
+			response, err = client.GetStepEmailDetails(sessionID, step.ID)
+		case synaps.PhoneStep:
+			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
+		case synaps.ProofOfAddressStep:
+			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		}
+
+		if err != nil {
+			log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+			continue
+		}
+		fmt.Printf("Response is:\n%+v\n", response)
 	}
 }
