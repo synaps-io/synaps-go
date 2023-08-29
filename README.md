@@ -2,8 +2,9 @@
 
 # Individual
 
-The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.
-Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).
+The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.  
+Individual sessions, represent a Know Your Customer (KYC) session for a given user.  
+This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).
 
 > For more details, please refer to the Synaps API documentation at [https://docs.synaps.io](https://docs.synaps.io).
 
@@ -34,7 +35,7 @@ This section provides an overview of the fundamental steps to integrate the SDK 
 
 ```go
 import (
-	synaps "github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 ```
 
