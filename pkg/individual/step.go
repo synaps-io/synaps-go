@@ -8,6 +8,7 @@ const (
 	ProofOfAddressStep StepType = "PROOF_OF_ADDRESS"
 	EmailStep          StepType = "EMAIL"
 	PhoneStep          StepType = "PHONE"
+	AMLStep            StepType = "AML"
 )
 
 type ReasonCode string
@@ -111,6 +112,48 @@ type (
 			File File `json:"file"`
 		} `json:"liveness"`
 	}
+	amlData struct {
+		AML struct {
+			CustomerInfo struct {
+				Firstname   string `json:"firstname"`
+				Lastname    string `json:"lastname"`
+				BirthDate   string `json:"birth_date"`
+				Nationality string `json:"nationality"`
+				Country     string `json:"country"`
+			} `json:"customer_info"`
+			Hits []struct {
+				Fields []struct {
+					Countries []struct {
+						CountryCode string `json:"country_code"`
+						Name        string `json:"name"`
+					} `json:"countries"`
+					Name   string `json:"name"`
+					Source string `json:"source"`
+					Value  []struct {
+						Name  string `json:"name"`
+						Value string `json:"value"`
+					} `json:"value"`
+					Tag []string `json:"tag"`
+				} `json:"fields"`
+				Aliases []string `json:"aliases"`
+				Media   []struct {
+					Date    string `json:"date"`
+					Snippet string `json:"snippet"`
+					Title   string `json:"title"`
+					URL     string `json:"url"`
+				} `json:"media"`
+				Info struct {
+					FullName    string `json:"full_name"`
+					BirthDate   string `json:"birth_date"`
+					Nationality string `json:"nationality"`
+				} `json:"info"`
+				Type []string `json:"type"`
+			} `json:"hits"`
+			TotalHits      int  `json:"total_hits"`
+			ActionRequired bool `json:"action_required"`
+			Monitored      bool `json:"monitored"`
+		} `json:"aml"`
+	}
 )
 
 type StepMetadata struct {
@@ -171,4 +214,14 @@ type LivenessStepDetailsResponse struct {
 	Reason   StepReason   `json:"reason"`
 
 	Verification livenessData `json:"verification"`
+}
+
+type AMLStepDetailsResponse struct {
+	ID       string       `json:"id"`
+	Type     StepType     `json:"type"`
+	Metadata StepMetadata `json:"metadata"`
+	Status   Status       `json:"status"`
+	Reason   StepReason   `json:"reason"`
+
+	Verification amlData `json:"verification"`
 }

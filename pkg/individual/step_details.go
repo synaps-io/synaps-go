@@ -48,3 +48,12 @@ func (c *Client) GetStepProofOfAddressDetails(sessionID string, stepID string) (
 
 	return *res, nil
 }
+
+func (c *Client) GetStepAMLDetails(sessionID string, stepID string) (AMLStepDetailsResponse, error) {
+	res, err := makeRequest[AMLStepDetailsResponse](c.httpClient, "GET", c.baseURL+"/individual/session/"+sessionID+"/step/"+stepID, nil, map[string]string{"Api-Key": c.apiKey})
+	if err != nil {
+		return AMLStepDetailsResponse{}, fmt.Errorf("get AML step details request failed: %s", err)
+	}
+
+	return *res, nil
+}

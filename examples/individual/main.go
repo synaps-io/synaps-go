@@ -81,7 +81,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-		fmt.Printf("ID[firstname]: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
 	}
 }
 
@@ -103,6 +103,8 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
 		case synaps.ProofOfAddressStep:
 			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		case synaps.AMLStep:
+			response, err = client.GetStepAMLDetails(sessionID, step.ID)
 		}
 
 		if err != nil {

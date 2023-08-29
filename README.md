@@ -2,8 +2,9 @@
 
 # Individual
 
-The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.
-Individual sessions, represent a Know Your Customer (KYC) session for a given user. This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).
+The Synaps Individual Go SDK provides a convenient way to interact with the Synaps API, specifically tailored for individual sessions.  
+Individual sessions, represent a Know Your Customer (KYC) session for a given user.  
+This SDK enables you to initiate sessions, retrieve session details, and obtain information about different steps within a session (Liveness, Identity, Proof of address, etc.).
 
 > For more details, please refer to the Synaps API documentation at [https://docs.synaps.io](https://docs.synaps.io).
 
@@ -19,7 +20,7 @@ go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
 
 Before you start using this SDK, ensure that you have the following:
 
-- **Go Programming Language**: version 1.19 or higher.
+- **Go Programming Language**: version 1.18 or higher.
 
 - **Synaps API Key**: Your Synaps API key. You can find it on the [manager](https://manager-kyc.synaps.io) within the developer section of your app.
 
@@ -34,7 +35,7 @@ This section provides an overview of the fundamental steps to integrate the SDK 
 
 ```go
 import (
-	synaps "github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
 )
 ```
 
@@ -162,6 +163,8 @@ for _, step := range details.Session.Steps {
 		response, err = client.GetStepPhoneDetails(sessionID, step.ID)
 	case synaps.ProofOfAddressStep:
 		response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+    case synaps.AMLStep:
+		response, err = client.GetStepAMLDetails(sessionID, step.ID)
 	}
 
 	if err != nil {
