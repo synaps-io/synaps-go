@@ -20,7 +20,7 @@ go get github.com/synaps-hub/synaps-sdk-go/pkg/individual
 
 Before you start using this SDK, ensure that you have the following:
 
-- **Go Programming Language**: version 1.19 or higher.
+- **Go Programming Language**: version 1.18 or higher.
 
 - **Synaps API Key**: Your Synaps API key. You can find it on the [manager](https://manager-kyc.synaps.io) within the developer section of your app.
 
