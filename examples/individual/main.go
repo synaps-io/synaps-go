@@ -103,6 +103,8 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
 		case synaps.ProofOfAddressStep:
 			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		case synaps.AMLStep:
+			response, err = client.GetStepAMLDetails(sessionID, step.ID)
 		}
 
 		if err != nil {
