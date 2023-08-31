@@ -10,8 +10,7 @@ import (
 func main() {
 	client := synaps.NewClientFromEnv()
 
-	alias := "john-doe"
-	initSessionRes, err := client.InitSession(alias)
+	initSessionRes, err := client.InitSession(synaps.InitSessionParams{Alias: "john-doe"})
 	if err != nil {
 		log.Fatalf("failed to init session: %s", err)
 	}
