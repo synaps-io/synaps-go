@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps-hub/synaps-sdk-go/pkg/individual"
 )
 
 func main() {

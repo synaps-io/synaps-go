@@ -35,7 +35,7 @@ This section provides an overview of the fundamental steps to integrate the SDK 
 
 ```go
 import (
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps-hub/synaps-sdk-go/pkg/individual"
 )
 ```
 
@@ -205,7 +205,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps-hub/synaps-sdk-go/pkg/individual"
 )
 ```
 
