@@ -5,7 +5,7 @@ type InitSessionResponse struct {
 	Sandbox   bool   `json:"sandbox"`
 }
 
-type InitSessionRequest struct {
+type InitSessionParams struct {
 	Metadata map[string]string `json:"metadata,omitempty"`
 	Alias    string            `json:"alias,omitempty"`
 }
@@ -16,18 +16,18 @@ type SessionDetailsResponse struct {
 		ID   string `json:"id"`
 	} `json:"app"`
 	Session struct {
-		ID      string       `json:"id"`
-		Alias   string       `json:"alias"`
+		ID      string `json:"id"`
+		Alias   string `json:"alias"`
 		Status  Status `json:"status"`
-		Sandbox bool         `json:"sandbox"`
-		Steps   []Step       `json:"steps"`
+		Sandbox bool   `json:"sandbox"`
+		Steps   []Step `json:"steps"`
 	} `json:"session"`
 }
 
 type Step struct {
-	ID     string       `json:"id"`
-	Status Status `json:"status"`
-	Type   StepType     `json:"type"`
+	ID     string   `json:"id"`
+	Status Status   `json:"status"`
+	Type   StepType `json:"type"`
 }
 
 func (d *SessionDetailsResponse) FindSessionStep(stepType StepType) (*Step, error) {
