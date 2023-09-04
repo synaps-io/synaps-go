@@ -32,16 +32,16 @@ func main() {
 	processSteps(client, details)
 }
 
-// Getting liveness step details with FindSessionStep helper method
+// Getting liveness step details with GetSessionStep helper method
 func processLiveness(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	sessionID := details.Session.ID
 
-	livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
+	livenessStep, err := details.GetSessionStep(synaps.LivenessStep)
 	if err != nil {
 		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
 	}
 
-	livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
+	livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, livenessStep.ID)
 	if err != nil {
 		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
 	}
@@ -73,7 +73,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 		log.Fatalf("failed to get step for session[%s]", sessionID)
 	}
 
-	IDStepDetails, err := client.GetStepIDDetails(sessionID, IDStep.ID)
+	IDStepDetails, err := client.GetIDStepDetails(sessionID, IDStep.ID)
 	if err != nil {
 		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
 	}
@@ -94,17 +94,17 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 	for _, step := range details.Session.Steps {
 		switch step.Type {
 		case synaps.LivenessStep:
-			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+			response, err = client.GetLivenessStepDetails(sessionID, step.ID)
 		case synaps.IDDocumentStep:
-			response, err = client.GetStepIDDetails(sessionID, step.ID)
+			response, err = client.GetIDStepDetails(sessionID, step.ID)
 		case synaps.EmailStep:
-			response, err = client.GetStepEmailDetails(sessionID, step.ID)
+			response, err = client.GetEmailStepDetails(sessionID, step.ID)
 		case synaps.PhoneStep:
-			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
+			response, err = client.GetPhoneStepDetails(sessionID, step.ID)
 		case synaps.ProofOfAddressStep:
-			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+			response, err = client.GetProofOfAddressStepDetails(sessionID, step.ID)
 		case synaps.AMLStep:
-			response, err = client.GetStepAMLDetails(sessionID, step.ID)
+			response, err = client.GetAMLStepDetails(sessionID, step.ID)
 		}
 
 		if err != nil {
