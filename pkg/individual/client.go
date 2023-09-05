@@ -11,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const DefaultBaseURL = "https://api.synaps.io/v4/"
+const DefaultBaseURL = "https://api.synaps.io/v4"
 
 type Client struct {
 	httpClient *http.Client
@@ -66,7 +66,7 @@ func makeRequest[T any](httpClient *http.Client, method string, path string, bod
 		return nil, fmt.Errorf("failed to make init session request: %w", err)
 	}
 
-	if (res.StatusCode < 200 || res.StatusCode >= 300) {
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		var error Error
 		if err := json.NewDecoder(res.Body).Decode(&error); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal error output: %w", err)

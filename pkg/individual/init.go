@@ -6,14 +6,9 @@ import (
 	"fmt"
 )
 
-func (c *Client) InitSession(alias string) (sessionID InitSessionResponse, err error) {
-	req := InitSessionRequest{}
-	if alias != "" {
-		req.Alias = alias
-	}
-
+func (c *Client) InitSession(params InitSessionParams) (sessionID InitSessionResponse, err error) {
 	headers := map[string]string{"Api-Key": c.apiKey, "Content-Type": "application/json"}
-	body, err := json.Marshal(req)
+	body, err := json.Marshal(params)
 	if err != nil {
 		return InitSessionResponse{}, fmt.Errorf("failed to marshal input: %s", err)
 	}
