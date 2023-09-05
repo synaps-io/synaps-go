@@ -5,7 +5,7 @@ type InitSessionResponse struct {
 	Sandbox   bool   `json:"sandbox"`
 }
 
-type InitSessionRequest struct {
+type InitSessionParams struct {
 	Metadata map[string]string `json:"metadata,omitempty"`
 	Alias    string            `json:"alias,omitempty"`
 }
