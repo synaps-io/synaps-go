@@ -31,27 +31,6 @@ func (c *Client) GetIDStepDetails(sessionID string, stepID string) (IDStepDetail
 	return *res, nil
 }
 
-func (c *Client) GetIDStepsDetails(sessionID string) ([]IDStepDetailsResponse, error) {
-	sessionDetails, err := c.GetSessionDetails(sessionID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get details for session[%s]: %s", sessionID, err)
-	}
-
-	var amlSteps []IDStepDetailsResponse
-
-	for _, step := range sessionDetails.Session.Steps {
-		if step.Type == IDDocumentStep {
-			res, err := makeRequest[IDStepDetailsResponse](c.httpClient, "GET", c.baseURL+"/individual/session/"+sessionID+"/step/"+step.ID, nil, map[string]string{"Api-Key": c.apiKey})
-			if err != nil {
-				return nil, fmt.Errorf("get AML step details request failed: %s", err)
-			}
-			amlSteps = append(amlSteps, *res)
-		}
-	}
-
-	return amlSteps, nil
-}
-
 func (c *Client) GetEmailStepDetails(sessionID string, stepID string) (EmailStepDetailsResponse, error) {
 	res, err := makeRequest[EmailStepDetailsResponse](c.httpClient, "GET", c.baseURL+"/individual/session/"+sessionID+"/step/"+stepID, nil, map[string]string{"Api-Key": c.apiKey})
 	if err != nil {
@@ -77,25 +56,4 @@ func (c *Client) GetAMLStepDetails(sessionID string, stepID string) (AMLStepDeta
 	}
 
 	return *res, nil
-}
-
-func (c *Client) GetAMLStepsDetails(sessionID string) ([]AMLStepDetailsResponse, error) {
-	sessionDetails, err := c.GetSessionDetails(sessionID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get details for session[%s]: %s", sessionID, err)
-	}
-
-	var amlSteps []AMLStepDetailsResponse
-
-	for _, step := range sessionDetails.Session.Steps {
-		if step.Type == AMLStep {
-			res, err := makeRequest[AMLStepDetailsResponse](c.httpClient, "GET", c.baseURL+"/individual/session/"+sessionID+"/step/"+step.ID, nil, map[string]string{"Api-Key": c.apiKey})
-			if err != nil {
-				return nil, fmt.Errorf("get AML step details request failed: %s", err)
-			}
-			amlSteps = append(amlSteps, *res)
-		}
-	}
-
-	return amlSteps, nil
 }

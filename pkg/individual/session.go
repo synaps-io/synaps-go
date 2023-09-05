@@ -16,25 +16,16 @@ type SessionDetailsResponse struct {
 		ID   string `json:"id"`
 	} `json:"app"`
 	Session struct {
-		ID      string       `json:"id"`
-		Alias   string       `json:"alias"`
+		ID      string `json:"id"`
+		Alias   string `json:"alias"`
 		Status  Status `json:"status"`
-		Sandbox bool         `json:"sandbox"`
-		Steps   []Step       `json:"steps"`
+		Sandbox bool   `json:"sandbox"`
+		Steps   []Step `json:"steps"`
 	} `json:"session"`
 }
 
 type Step struct {
-	ID     string       `json:"id"`
-	Status Status `json:"status"`
-	Type   StepType     `json:"type"`
-}
-
-func (d *SessionDetailsResponse) GetSessionStep(stepType StepType) (*Step, error) {
-	for _, step := range d.Session.Steps {
-		if step.Type == stepType {
-			return &step, nil
-		}
-	}
-	return nil, ErrStepNotFound
+	ID     string   `json:"id"`
+	Status Status   `json:"status"`
+	Type   StepType `json:"type"`
 }

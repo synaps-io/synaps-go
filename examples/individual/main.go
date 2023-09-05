@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/synaps.io/synaps-sdk-go/pkg/individual"
+	"github.com/synaps-hub/synaps-sdk-go/pkg/individual"
 )
 
 func main() {
@@ -32,33 +32,32 @@ func main() {
 	processSteps(client, details)
 }
 
-// Getting liveness step details with GetSessionStep helper method
+// Getting liveness step details (with multiple liveness step)
 func processLiveness(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	sessionID := details.Session.ID
 
-	livenessStep, err := details.GetSessionStep(synaps.LivenessStep)
-	if err != nil {
-		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-	}
+	for _, step := range details.Session.Steps {
+		if step.Type == synaps.LivenessStep {
+			livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, step.ID)
+			if err != nil {
+				log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+			}
 
-	livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, livenessStep.ID)
-	if err != nil {
-		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-	}
+			fmt.Printf("Liveness step status: %s\n", step.Status)
 
-	fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
-
-	switch livenessStep.Status {
-	case synaps.StatusApproved:
-		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-	case synaps.StatusRejected:
-		fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
-	default:
-		fmt.Printf("Liveness step is not finished yet\n")
+			switch step.Status {
+			case synaps.StatusApproved:
+				fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+			case synaps.StatusRejected:
+				fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+			default:
+				fmt.Printf("Liveness step is not finished yet\n")
+			}
+		}
 	}
 }
 
-// Getting id document step details without helper method
+// Getting id document step details (with only one ID step)
 func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	var IDStep *synaps.Step
 	for _, step := range details.Session.Steps {

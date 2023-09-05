@@ -93,31 +93,30 @@ fmt.Printf("session status: %s\n", details.Session.Status)
 #### Get step details
 (Refer to the [documentation](https://docs.synaps.io/steps#get-step-details) for details about the step details response)
 
-Get liveness step details using the `FindSessionStep` helper method:
+You can have multiple steps of the same type so for exemple:
 ```go
-livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
-if err != nil {
-	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-}
+for _, step := range details.Session.Steps {
+    if step.Type == synaps.LivenessStep {
+        livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, step.ID)
+        if err != nil {
+            log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+        }
 
-livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
-if err != nil {
-	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-}
+        fmt.Printf("Liveness step status: %s\n", step.Status)
 
-fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
-
-switch livenessStep.Status {
-case synaps.StatusApproved:
-	fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-case synaps.StatusRejected:
-	fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
-default:
-	fmt.Printf("Liveness step is not finished yet\n")
+        switch step.Status {
+        case synaps.StatusApproved:
+            fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+        case synaps.StatusRejected:
+            fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+        default:
+            fmt.Printf("Liveness step is not finished yet\n")
+        }
+    }
 }
 ```
 
-Get ID step details without helper method:
+Get ID step details (with only one step ID):
 ```go
 var IDStep *synaps.Step
 for _, step := range details.Session.Steps {
@@ -153,18 +152,18 @@ var err error
 for _, step := range details.Session.Steps {
 	switch step.Type {
 	case synaps.LivenessStep:
-		response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+		response, err = client.GetLivenessStepDetails(sessionID, step.ID)
         // Do your stuff...
 	case synaps.IDDocumentStep:
-		response, err = client.GetStepIDDetails(sessionID, step.ID)
+		response, err = client.GetIDStepDetails(sessionID, step.ID)
 	case synaps.EmailStep:
-		response, err = client.GetStepEmailDetails(sessionID, step.ID)
+		response, err = client.GetEmailStepDetails(sessionID, step.ID)
 	case synaps.PhoneStep:
-		response, err = client.GetStepPhoneDetails(sessionID, step.ID)
-	case synaps.ProofOfAddressStep:
-		response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		response, err = client.GetPhoneStepDetails(sessionID, step.ID)
+	case synaps.ProofOfAddressStep
+		response, err = client.GetProofOfAddressStepDetails(sessionID, step.ID)
     case synaps.AMLStep:
-		response, err = client.GetStepAMLDetails(sessionID, step.ID)
+		response, err = client.GetAMLStepDetails(sessionID, step.ID)
 	}
 
 	if err != nil {
@@ -172,6 +171,7 @@ for _, step := range details.Session.Steps {
 		continue
 	}
 	
+	fmt.Printf("Response is:\n%+v\n", response)
     // Do your stuff...
 }
 ```
