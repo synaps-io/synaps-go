@@ -31,33 +31,32 @@ func main() {
 	processSteps(client, details)
 }
 
-// Getting liveness step details with FindSessionStep helper method
+// Getting liveness step details (with multiple liveness step)
 func processLiveness(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	sessionID := details.Session.ID
 
-	livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
-	if err != nil {
-		log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-	}
+	for _, step := range details.Session.Steps {
+		if step.Type == synaps.LivenessStep {
+			livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, step.ID)
+			if err != nil {
+				log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+			}
 
-	livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
-	if err != nil {
-		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-	}
+			fmt.Printf("Liveness step status: %s\n", step.Status)
 
-	fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
-
-	switch livenessStep.Status {
-	case synaps.StatusApproved:
-		fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-	case synaps.StatusRejected:
-		fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
-	default:
-		fmt.Printf("Liveness step is not finished yet\n")
+			switch step.Status {
+			case synaps.StatusApproved:
+				fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+			case synaps.StatusRejected:
+				fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+			default:
+				fmt.Printf("Liveness step is not finished yet\n")
+			}
+		}
 	}
 }
 
-// Getting id document step details without helper method
+// Getting id document step details (with only one ID step)
 func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	var IDStep *synaps.Step
 	for _, step := range details.Session.Steps {
@@ -72,7 +71,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 		log.Fatalf("failed to get step for session[%s]", sessionID)
 	}
 
-	IDStepDetails, err := client.GetStepIDDetails(sessionID, IDStep.ID)
+	IDStepDetails, err := client.GetIDStepDetails(sessionID, IDStep.ID)
 	if err != nil {
 		log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", IDStep.Type, sessionID, err)
 	}
@@ -80,7 +79,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["firstname"])
 	}
 }
 
@@ -93,17 +92,17 @@ func processSteps(client *synaps.Client, details synaps.SessionDetailsResponse) 
 	for _, step := range details.Session.Steps {
 		switch step.Type {
 		case synaps.LivenessStep:
-			response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+			response, err = client.GetLivenessStepDetails(sessionID, step.ID)
 		case synaps.IDDocumentStep:
-			response, err = client.GetStepIDDetails(sessionID, step.ID)
+			response, err = client.GetIDStepDetails(sessionID, step.ID)
 		case synaps.EmailStep:
-			response, err = client.GetStepEmailDetails(sessionID, step.ID)
+			response, err = client.GetEmailStepDetails(sessionID, step.ID)
 		case synaps.PhoneStep:
-			response, err = client.GetStepPhoneDetails(sessionID, step.ID)
+			response, err = client.GetPhoneStepDetails(sessionID, step.ID)
 		case synaps.ProofOfAddressStep:
-			response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+			response, err = client.GetProofOfAddressStepDetails(sessionID, step.ID)
 		case synaps.AMLStep:
-			response, err = client.GetStepAMLDetails(sessionID, step.ID)
+			response, err = client.GetAMLStepDetails(sessionID, step.ID)
 		}
 
 		if err != nil {

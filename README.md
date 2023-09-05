@@ -55,29 +55,41 @@ synapsClient := synaps.NewClient("$YOUR_API_KEY")
 
 #### Initialize session
 
+You can choose when to create a KYC session for your user (on register, on first withdrawal, on first deposit, ...), the most common way is on register.
+
 Initialize a new session:
 
 ```go
+// ... Create user
+
 initSessionRes, err := client.InitSession(synaps.InitSessionParams{})
 if err != nil {
 	log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
+
+// ... Store user with sessionID
 ```
 
-Initialize a new session with an `alias`:
+Initialize a new session with an `alias` (most common use case is to set username as an alias):
 
 ```go
+// ... Create user
+
 initSessionRes, err := client.InitSession(synaps.InitSessionParams{Alias: "john-doe"})
 if err != nil {
 	log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
+
+// ... Store user with sessionID
 ```
 
 Initialize a new session with `metadata`:
 
 ```go
+// ... Create user
+
 initSessionRes, err := client.InitSession(synaps.InitSessionParams{Metadata: map[string]string{
     "firstname": "John",
     "lastname": "Doe",
@@ -88,50 +100,56 @@ if err != nil {
 	log.Fatalf("failed to init session: %s", err)
 }
 sessionID := initSessionRes.SessionID
+
+// ... Store user with sessionID
 ```
 
 #### Get session details
 
 (Refer to the [documentation](https://docs.synaps.io/session#get-session-details) for details about the session details response)
 
+While waiting for KYC session to be completed you can use our API to provide informations about their KYC to your users. Here is how to use SDK to get theses informations:
+
 ```go
+// ... Get user and associated sessionID 
+
 details, err := client.GetSessionDetails(sessionID)
 if err != nil {
 	log.Fatalf("failed to get details for session[%s]: %s", sessionID, err)
 }
 
 fmt.Printf("session status: %s\n", details.Session.Status)
-```
 
+```
 
 #### Get step details
 (Refer to the [documentation](https://docs.synaps.io/steps#get-step-details) for details about the step details response)
 
-Get liveness step details using the `FindSessionStep` helper method:
+Steps in your KYC flow (Liveness, ID document, Proof of residency, ...), are configurable, thus you can have multiple steps of the same type:
+
 ```go
-livenessStep, err := details.FindSessionStep(synaps.LivenessStep)
-if err != nil {
-	log.Fatalf("failed to get step for session[%s]: %s", sessionID, err)
-}
+for _, step := range details.Session.Steps {
+    if step.Type == synaps.LivenessStep {
+        livenessStepDetails, err := client.GetLivenessStepDetails(sessionID, step.ID)
+        if err != nil {
+            log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", step.Type, sessionID, err)
+        }
 
-livenessStepDetails, err := client.GetStepLivenessDetails(sessionID, livenessStep.ID)
-if err != nil {
-	log.Fatalf("failed to get step details for step [%s] and session[%s]: %s", livenessStep.Type, sessionID, err)
-}
+        fmt.Printf("Liveness step status: %s\n", step.Status)
 
-fmt.Printf("Liveness step status: %s\n", livenessStep.Status)
-
-switch livenessStep.Status {
-case synaps.StatusApproved:
-	fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
-case synaps.StatusRejected:
-	fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
-default:
-	fmt.Printf("Liveness step is not finished yet\n")
+        switch step.Status {
+        case synaps.StatusApproved:
+            fmt.Printf("Liveness file url: %s\n", livenessStepDetails.Verification.Liveness.File.URL)
+        case synaps.StatusRejected:
+            fmt.Printf("Liveness reject reason: %s\n", livenessStepDetails.Reason.Message)
+        default:
+            fmt.Printf("Liveness step is not finished yet\n")
+        }
+    }
 }
 ```
 
-Get ID step details without helper method:
+An exemple for getting ID step details (with only one step ID Document):
 ```go
 var IDStep *synaps.Step
 for _, step := range details.Session.Steps {
@@ -154,7 +172,7 @@ if err != nil {
 fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-	fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+	fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["firstname"])
 }
 ```
 
@@ -167,18 +185,18 @@ var err error
 for _, step := range details.Session.Steps {
 	switch step.Type {
 	case synaps.LivenessStep:
-		response, err = client.GetStepLivenessDetails(sessionID, step.ID)
+		response, err = client.GetLivenessStepDetails(sessionID, step.ID)
         // Do your stuff...
 	case synaps.IDDocumentStep:
-		response, err = client.GetStepIDDetails(sessionID, step.ID)
+		response, err = client.GetIDStepDetails(sessionID, step.ID)
 	case synaps.EmailStep:
-		response, err = client.GetStepEmailDetails(sessionID, step.ID)
+		response, err = client.GetEmailStepDetails(sessionID, step.ID)
 	case synaps.PhoneStep:
-		response, err = client.GetStepPhoneDetails(sessionID, step.ID)
-	case synaps.ProofOfAddressStep:
-		response, err = client.GetStepProofOfAddressDetails(sessionID, step.ID)
+		response, err = client.GetPhoneStepDetails(sessionID, step.ID)
+	case synaps.ProofOfAddressStep
+		response, err = client.GetProofOfAddressStepDetails(sessionID, step.ID)
     case synaps.AMLStep:
-		response, err = client.GetStepAMLDetails(sessionID, step.ID)
+		response, err = client.GetAMLStepDetails(sessionID, step.ID)
 	}
 
 	if err != nil {
@@ -186,11 +204,14 @@ for _, step := range details.Session.Steps {
 		continue
 	}
 	
+	fmt.Printf("Response is:\n%+v\n", response)
     // Do your stuff...
 }
 ```
 
 ### Webhooks
+
+We provide webhooks, which are triggered for any state change in a KYC session, so you can update your database and notify your users as needed.
 
 In order to receive webhooks, you'll need to create an endpoint that can receive and handle the webhook events. Below is an example of how to set up the necessary components.
 
@@ -245,12 +266,17 @@ Create a function to handle the webhook event:
 
 ```go
 func handleEvent(payload synaps.WebhookPayload) {
-	switch payload.Status {
-	case synaps.EventApproved:
-		log.Printf("Received event: APPROVED")
-	case synaps.EventRejected:
-		log.Printf("Received event: REJECTED")
-        // ...
+	switch payload.Service {
+	case synaps.IDDocumentStep:
+		log.Printf("Received ID document event: %s: %s", payload.Status, payload.Reason)
+
+        
+		// ... Find user by sessionID and send email to user
+
+	case synaps.LivenessStep:
+		log.Printf("Received liveness event: %s: %s", payload.Status, payload.Reason)
+
+		// ... Find user by sessionID and send email to user
 	}
 }
 ```

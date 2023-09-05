@@ -29,12 +29,3 @@ type Step struct {
 	Status Status   `json:"status"`
 	Type   StepType `json:"type"`
 }
-
-func (d *SessionDetailsResponse) FindSessionStep(stepType StepType) (*Step, error) {
-	for _, step := range d.Session.Steps {
-		if step.Type == stepType {
-			return &step, nil
-		}
-	}
-	return nil, ErrStepNotFound
-}
