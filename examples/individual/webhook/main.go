@@ -11,14 +11,16 @@ import (
 )
 
 func handleEvent(payload synaps.WebhookPayload) {
-	switch payload.Status {
-	case synaps.EventApproved:
-		log.Printf("Received event: %s step [%s] APPROVED", payload.StepID, payload.Service)
+	switch payload.Service {
+	case synaps.IDDocumentStep:
+		log.Printf("Received ID document event: %s: %s", payload.Status, payload.Reason)
 
-		// send email to user
+		// ... Find user by sessionID and send email to user
 
-	case synaps.EventRejected:
-		log.Printf("Received event: REJECTED")
+	case synaps.LivenessStep:
+		log.Printf("Received liveness event: %s: %s", payload.Status, payload.Reason)
+
+		// ... Find user by sessionID and send email to user
 	}
 }
 

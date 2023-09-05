@@ -79,7 +79,7 @@ func processID(client *synaps.Client, details synaps.SessionDetailsResponse) {
 	fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 	if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+		fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["firstname"])
 	}
 }
 

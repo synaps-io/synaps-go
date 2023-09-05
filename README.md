@@ -111,6 +111,7 @@ sessionID := initSessionRes.SessionID
 While waiting for KYC session to be completed you can use our API to provide informations about their KYC to your users. Here is how to use SDK to get theses informations:
 
 ```go
+// ... Get user and associated sessionID 
 
 details, err := client.GetSessionDetails(sessionID)
 if err != nil {
@@ -171,7 +172,7 @@ if err != nil {
 fmt.Printf("ID step status: %s\n", IDStepDetails.Status)
 
 if IDStepDetails.Status == synaps.StatusPending || IDStepDetails.Status == synaps.StatusApproved {
-	fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["FIRSTNAME"])
+	fmt.Printf("ID Document firstname: %s\n", IDStepDetails.Document.Fields["firstname"])
 }
 ```
 
@@ -265,12 +266,17 @@ Create a function to handle the webhook event:
 
 ```go
 func handleEvent(payload synaps.WebhookPayload) {
-	switch payload.Status {
-	case synaps.EventApproved:
-		log.Printf("Received event: APPROVED")
-	case synaps.EventRejected:
-		log.Printf("Received event: REJECTED")
-        // ...
+	switch payload.Service {
+	case synaps.IDDocumentStep:
+		log.Printf("Received ID document event: %s: %s", payload.Status, payload.Reason)
+
+        
+		// ... Find user by sessionID and send email to user
+
+	case synaps.LivenessStep:
+		log.Printf("Received liveness event: %s: %s", payload.Status, payload.Reason)
+
+		// ... Find user by sessionID and send email to user
 	}
 }
 ```
